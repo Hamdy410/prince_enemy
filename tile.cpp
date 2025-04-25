@@ -1,13 +1,7 @@
 #include "tile.h"
 #include<QGraphicsPixmapItem>
+#include <QRectF>
 
-tile::tile(int x, int y): QGraphicsPixmapItem(nullptr){
-    QPixmap Spritesheet(":/images/EnvironSpriteOK.png");
-    setPixmap(Spritesheet.copy(127,685,60,18));
-    setPos(x,y);
-    groundy=y;
-    boundingrect = boundingRect();
-}
 /*void tile::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
     // Draw your player sprite/image first (if any)
     painter->drawPixmap(0, 0, pixmap());
@@ -17,3 +11,13 @@ tile::tile(int x, int y): QGraphicsPixmapItem(nullptr){
     painter->drawRect(boundingrect);      // Draw the bounding rectangle
 }
 */
+
+tile::tile(int x, int y, bool hasEnemy)
+    : QGraphicsPixmapItem(nullptr)
+    , m_hasEnemy(hasEnemy) {
+    QPixmap SpriteSheet(":/images/EnvironSpriteOK.png");
+    setPixmap(SpriteSheet.copy(127, 685, 60, 18));
+    setPos(x, y);
+    groundy = y;
+    boundingrect = boundingRect();
+}

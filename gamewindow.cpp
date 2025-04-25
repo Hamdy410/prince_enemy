@@ -18,44 +18,68 @@ GameWindow::~GameWindow() {
 }
 
 void GameWindow::initializeGame() {
-    m_enemy = new Enemy(this);
-    if (!m_enemy->initialize(":/sprites/enemy_sprite.png", 64, 64)) {
-        qWarning() << "Failed to initialize enemy!";
+    for (Enemy* enemy : m_enemies) {
+        delete enemy;
     }
+    m_enemies.clear();
 
     m_player = new QGraphicsRectItem(0, 0, 32, 64);
     m_player->setPos(width() / 2, height() / 2);
-    m_enemy->setPlayer(m_player);
 
     createTiles();
-    QList<QGraphicsItem*> tileItems;
-    for (tile* t : m_tiles) {
-        tileItems.append(t);
+
+    QList<QList<QGraphicsItem*>> platforms;
+    QList<QGraphicsItem*> currentPlatform;
+
+    for (int i = 0; i < m_tiles.size(); i++) {
+        tile* currentTile = m_tiles[i];
+
+        if (i == 0 || (qAbs(currentTile->pos().x() - m_tiles[i - 1]->pos().x()) <= 60 &&
+                       currentTile->pos().y() == m_tiles[i-1]->pos().y()))
+            currentPlatform.append(currentTile);
+        else {
+            if (!currentPlatform.isEmpty()) {
+                platforms.append(currentPlatform);
+                currentPlatform.clear();
+            }
+            currentPlatform.append(currentTile);
+        }
+
+        if (currentTile->hasEnemy()) {
+            Enemy* enemy = new Enemy(this);
+            if (enemy->initialize(":/sprites/enemy_sprite.png", 64, 64)) {
+                enemy->setPlayer(m_player);
+
+                QList<QGraphicsItem*> platformTiles = currentPlatform;
+                enemy->setTiles(platformTiles);
+                enemy->setPosition(QPoint(currentTile->pos().x(),
+                                          currentTile->pos().y() - enemy->boundingRect().height()));
+                enemy->startPatrolling();
+                m_enemies.append(enemy);
+
+                connect(enemy, &Enemy::positionChanged, this, [this] () {
+                    update();
+                });
+                connect(enemy, &Enemy::visualChanged, this, [this](){
+                    update();
+                });
+                connect(enemy, &Enemy::died, this, [this, enemy, platformTiles]() {
+                    QTimer::singleShot(3000, this, [this, enemy, platformTiles]() {
+                        if (!platformTiles.isEmpty()) {
+                            QGraphicsItem* firstTile = platformTiles.first();
+                            enemy->setPosition(QPoint(firstTile->pos().x(), firstTile->pos().y() - enemy->boundingRect().height()));
+                        }
+                        enemy->m_alive = true;
+                        enemy->setState(Enemy::WALKRIGHT);
+                    });
+                });
+            }
+        }
     }
-    m_enemy->setTiles(tileItems);
 
-    if (!m_tiles.isEmpty()) {
-        qDebug() << "It was empty.";
-        tile* firstTile = m_tiles.first();
-        m_enemy->setPosition(QPoint(firstTile->pos().x(), firstTile->pos().y() - m_enemy->boundingRect().height()));
-    } else {
-        m_enemy->setPosition(QPoint(width() / 2 - 32, height() / 2 - 32));
+    if (!currentPlatform.isEmpty()) {
+        platforms.append(currentPlatform);
     }
-
-    m_enemy->startPatrolling();
-
-    connect(m_enemy, &Enemy::positionChanged, this, [this]() { update(); });
-    connect(m_enemy, &Enemy::visualChanged, this, [this]() { update(); });
-    connect(m_enemy, &Enemy::died, this, [this]() {
-        qDebug() << "Enemy has died!";
-
-        // Handling the enemy death (respawn after delay, etc.)
-        QTimer::singleShot(3000, this, [this]() {
-            m_enemy->setPosition(QPoint(width() / 2 - 32, height() / 2 - 32));
-            m_enemy->m_alive = true;
-            m_enemy->setState(Enemy::WALKRIGHT);
-        });
-    });
 
     m_gameTimer.setInterval(16);
     connect(&m_gameTimer, &QTimer::timeout, this, &GameWindow::updateGame);
@@ -68,6 +92,7 @@ void GameWindow::paintEvent(QPaintEvent *event) {
 
     painter.fillRect(rect(), Qt::white);
 
+    // Draw tiles
     for (tile* t : m_tiles) {
         painter.drawPixmap(t->pos(), t->pixmap());
 
@@ -78,8 +103,16 @@ void GameWindow::paintEvent(QPaintEvent *event) {
         }
     }
 
+    // Draw the player
     painter.fillRect(m_player->boundingRect().translated(m_player->pos()), Qt::blue);
-    m_enemy->render(&painter);
+
+
+    // Draw Enemies
+    for (Enemy* enemy : m_enemies) {
+        enemy->render(&painter);
+    }
+
+
     m_frameCounter++;
     if (m_fpsTimer.elapsed() >= 1000) {
         m_fps = m_frameCounter;
@@ -93,6 +126,8 @@ void GameWindow::paintEvent(QPaintEvent *event) {
 void GameWindow::keyPressEvent(QKeyEvent *event) {
     if (event->isAutoRepeat())
         return;
+
+    Enemy* m_enemy = m_enemies.isEmpty() ? nullptr : m_enemies.first();
 
     switch (event->key()) {
     case Qt::Key_D:
@@ -128,8 +163,6 @@ void GameWindow::keyPressEvent(QKeyEvent *event) {
         toggleDebugMode();
         break;
     case Qt::Key_Space:
-        centerEnemyVertically();
-        m_enemy->setPosition(QPoint(width() / 2 - 32, m_enemy->position().y()));
         break;
     case Qt::Key_Escape:
         close();
@@ -152,25 +185,58 @@ void GameWindow::keyReleaseEvent(QKeyEvent *event) {
 }
 
 void GameWindow::resizeEvent(QResizeEvent *event) {
+    QMap<Enemy*, QList<QGraphicsItem*>> enemyPlatforms;
+
     createTiles();
 
-    QList<QGraphicsItem*> tileItems;
-    for (tile* t : m_tiles) {
-        tileItems.append(t);
+    QList<QList<QGraphicsItem*>> platforms;
+    QList<QGraphicsItem*> currentPlatform;
+
+    for (int i = 0; i < m_tiles.size(); i++) {
+        tile* currentTile = m_tiles[i];
+
+        if (i == 0 || (qAbs(currentTile->pos().x() - m_tiles[i-1]->pos().x()) <= 60 &&
+                       currentTile->pos().y() == m_tiles[i-1]->pos().y())) {
+            currentPlatform.append(currentTile);
+        } else {
+            if (!currentPlatform.isEmpty()) {
+                platforms.append(currentPlatform);
+                currentPlatform.clear();
+            }
+            currentPlatform.append(currentTile);
+        }
     }
-    m_enemy->setTiles(tileItems);
-    if (!m_tiles.isEmpty()) {
-        tile* firstTile = m_tiles.first();
-        m_enemy->setPosition(QPoint(firstTile->pos().x(), firstTile->pos().y() - m_enemy->boundingRect().height()));
+
+    if (!currentPlatform.isEmpty()) {
+        platforms.append(currentPlatform);
+    }
+
+    int enemyIndex = 0;
+    for (int i = 0; i < platforms.size() && enemyIndex < m_enemies.size(); i++) {
+        bool platformHasEnemy = false;
+        for (QGraphicsItem* item : platforms[i]) {
+            tile* t = dynamic_cast<tile*>(item);
+            if (t && t->hasEnemy()) {
+                platformHasEnemy = true;
+                break;
+            }
+        }
+
+        if (platformHasEnemy && enemyIndex < m_enemies.size()) {
+            m_enemies[enemyIndex]->setTiles(platforms[i]);
+            if (!platforms[i].isEmpty()) {
+                QGraphicsItem* firstTile = platforms[i].first();
+                m_enemies[enemyIndex]->setPosition(QPoint(
+                    firstTile->pos().x(),
+                    firstTile->pos().y() - m_enemies[enemyIndex]->boundingRect().height()
+                ));
+            }
+
+            enemyIndex++;
+        }
     }
 
     QMainWindow::resizeEvent(event);
-}
-
-void GameWindow::centerEnemyVertically() {
-    QPoint pos = m_enemy->position();
-    pos.setY(height() / 2 - 32);
-    m_enemy->setPosition(pos);
 }
 
 void GameWindow::drawDebugInfo(QPainter *painter) {
@@ -180,21 +246,29 @@ void GameWindow::drawDebugInfo(QPainter *painter) {
     painter->setFont(font);
 
     QStringList debugInfo;
-    debugInfo << QString("FPS: %1").arg(m_fps)
-              << QString("State: %1").arg(stateToString(m_enemy->m_currentState))
-              << QString("Position: (%1, %2)").arg(m_enemy->position().x()).arg(m_enemy->position().y())
-              << QString("Size: 64x64")
-              << "D: Walk right | A: Walk Left"
-              << "R: Attack right | L: Attack Left"
-              << "K: Die Right | J: Die Left"
-              << "+/-: Adjust speed | T: toggle debug";
+    debugInfo << QString("FPS: %1").arg(m_fps);
+
+    if (!m_enemies.isEmpty()) {
+        Enemy* firstEnemy = m_enemies.first();
+        debugInfo << QString("State: %1").arg(stateToString(firstEnemy->m_currentState))
+                  << QString("Position: (%1, %2)").arg(firstEnemy->position().x()).arg(firstEnemy->position().y())
+                  << QString("Size: 64x64");
+    }
+
+    debugInfo << "D: Walk right | A: Walk left"
+               << "R: Attack right | L: Attack left"
+               << "K: Die right | J: Die left"
+               << "+/-: Adjust Speed | T: toggle debug";
+
+    debugInfo << QString("Enemies: %1").arg(m_enemies.size());
 
     QRect infoBox(10, 10, 250, 20 * debugInfo.size() + 10);
     painter->fillRect(infoBox, QColor(255, 255, 255, 200));
     painter->drawRect(infoBox);
 
-    for (int i = 0; i < debugInfo.size(); i++)
+    for (int i = 0; i < debugInfo.size(); i++) {
         painter->drawText(20, 30 + i * 20, debugInfo[i]);
+    }
 }
 
 QString GameWindow::stateToString(Enemy::State state) const {
@@ -210,9 +284,23 @@ QString GameWindow::stateToString(Enemy::State state) const {
 }
 
 void GameWindow::updateGame() {
-    if (m_enemy) {
-        m_enemy->update(width());
+    for (Enemy* enemy : m_enemies) {
+        if (enemy) {
+            enemy->update(width());
+        }
     }
+}
+
+QList<tile*> GameWindow::createTiles(int startX, int y, int count, int tileWidth, bool createEnemy) {
+    QList<tile*> tileList;
+
+    for (int i = 0; i < count; i++) {
+        bool tileHasEnemy = createEnemy && (i == 0);
+        tile* newTile = new tile(startX + i * tileWidth, y, tileHasEnemy);
+        tileList.append(newTile);
+    }
+
+    return tileList;
 }
 
 void GameWindow::createTiles() {
@@ -221,14 +309,9 @@ void GameWindow::createTiles() {
     }
     m_tiles.clear();
 
-    int tileWidth = 60;
-    int tileCount = 4;
-    int groundY = height() - 100;
+    QList<tile*> platform1 = createTiles(100, height() - 100, 4, 60, true);
+    m_tiles.append(platform1);
 
-    int startX = 100;
-
-    for (int i = 0; i < tileCount; i++) {
-        tile* newTile = new tile(startX + i * tileWidth, groundY);
-        m_tiles.append(newTile);
-    }
+    QList<tile*> platform2 = createTiles(400, height() - 200, 3, 60, true);
+    m_tiles.append(platform2);
 }

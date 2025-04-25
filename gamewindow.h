@@ -28,15 +28,15 @@ private slots:
 
 private:
     void initializeGame();
-    void centerEnemyVertically();
     void drawDebugInfo(QPainter *painter);
     QString stateToString(Enemy::State state) const;
 
+    QList<tile*> createTiles(int startX, int y, int count, int tileWidth = 60, bool createEnemy = false);
     void createTiles();
 
-    Enemy *m_enemy;
     QGraphicsItem *m_player;
     QList<tile*> m_tiles;
+    QList<Enemy*> m_enemies;
 
     QTimer m_gameTimer;
     bool m_debugMode;
