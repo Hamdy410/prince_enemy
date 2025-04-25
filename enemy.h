@@ -90,7 +90,7 @@ private slots:
     void handleAnimationCompleted(const QString& stateName);
 
 private:
-    // Helper to conver enum to string
+    // Helper to convert enum to string
     QString stateToString(State state) const;
 
     Animation *m_animation;
