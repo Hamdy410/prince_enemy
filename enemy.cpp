@@ -1,4 +1,5 @@
 #include "enemy.h"
+
 #include <QPainter>
 #include <QDebug>
 #include <QTransform>
@@ -14,6 +15,7 @@ Enemy::Enemy(QObject* parent)
     , m_attackCooldown(2000)
     , m_currentCooldown(0)
     , m_player(nullptr)
+    , m_isPatrolling(true)
 {
     connect(m_animation, &Animation::frameChanged, this, [this](int) {
         emit visualChanged();
@@ -126,8 +128,9 @@ bool Enemy::setState(State state) {
 }
 
 void Enemy::setPosition(const QPoint &pos) {
-    if (m_position != pos) {
+    if (pos.x() != m_position.x() || pos.y() != m_position.y()) {
         m_position = pos;
+        setPos(pos);
         emit positionChanged();
     }
 }
@@ -142,6 +145,12 @@ void Enemy::update(int windowWidth) {
 
     // Only move the enemy if in a movable state (walking) and animation is running
     if (m_animation->isRunning() && (m_currentState == WALKRIGHT || m_currentState == WALKLEFT)) {
+        if (m_isPatrolling && checkForEdge()) {
+            m_facingDirection *= -1;
+            setState(m_facingDirection > 0 ? WALKRIGHT : WALKLEFT);
+            return;
+        }
+
         QPoint pos = m_position;
 
         // Use the facing direction to determine movement
@@ -279,4 +288,31 @@ void Enemy::updateCooldown() {
         if (m_currentCooldown < 0)
             m_currentCooldown = 0;
     }
+}
+
+bool Enemy::checkForEdge() {
+    if (m_tiles.isEmpty())
+        return false;
+
+    // calculate the position where we need to check for ground
+    // We check slightly ahead of the enemy in the direction it's facing
+    int checkX = pos().x() + (m_facingDirection > 0 ? boundingRect().width() + 5 : -5);
+    int checkY = pos().y() + boundingRect().height() + 5; // check slightly below the feet
+
+    // Check if there's ground at this position
+    QPointF checkPoint(checkX, checkY);
+    bool foundGround = false;
+
+    for (QGraphicsItem* item : m_tiles) {
+        QRectF tileRect = item->sceneBoundingRect();
+
+        if (checkX >= tileRect.left() && checkX <= tileRect.right()) {
+            if (qAbs(checkY - tileRect.top()) < 10) {
+                foundGround = true;
+                break;
+            }
+        }
+    }
+
+    return !foundGround;
 }

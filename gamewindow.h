@@ -4,7 +4,9 @@
 #include <QMainWindow>
 #include <QTimer>
 #include <QElapsedTimer>
+
 #include "enemy.h"
+#include "tile.h"
 
 class GameWindow : public QMainWindow
 {
@@ -30,8 +32,12 @@ private:
     void drawDebugInfo(QPainter *painter);
     QString stateToString(Enemy::State state) const;
 
+    void createTiles();
+
     Enemy *m_enemy;
     QGraphicsItem *m_player;
+    QList<tile*> m_tiles;
+
     QTimer m_gameTimer;
     bool m_debugMode;
     int m_frameCounter;

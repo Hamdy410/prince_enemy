@@ -27,7 +27,22 @@ void GameWindow::initializeGame() {
     m_player->setPos(width() / 2, height() / 2);
     m_enemy->setPlayer(m_player);
 
-    m_enemy->setPosition(QPoint(width() / 2 - 32, height() / 2 - 32));
+    createTiles();
+    QList<QGraphicsItem*> tileItems;
+    for (tile* t : m_tiles) {
+        tileItems.append(t);
+    }
+    m_enemy->setTiles(tileItems);
+
+    if (!m_tiles.isEmpty()) {
+        qDebug() << "It was empty.";
+        tile* firstTile = m_tiles.first();
+        m_enemy->setPosition(QPoint(firstTile->pos().x(), firstTile->pos().y() - m_enemy->boundingRect().height()));
+    } else {
+        m_enemy->setPosition(QPoint(width() / 2 - 32, height() / 2 - 32));
+    }
+
+    m_enemy->startPatrolling();
 
     connect(m_enemy, &Enemy::positionChanged, this, [this]() { update(); });
     connect(m_enemy, &Enemy::visualChanged, this, [this]() { update(); });
@@ -52,6 +67,16 @@ void GameWindow::paintEvent(QPaintEvent *event) {
     QPainter painter(this);
 
     painter.fillRect(rect(), Qt::white);
+
+    for (tile* t : m_tiles) {
+        painter.drawPixmap(t->pos(), t->pixmap());
+
+        if (m_debugMode) {
+            painter.setPen(QPen(Qt::green, 2));
+            painter.setBrush(Qt::transparent);
+            painter.drawRect(t->boundingRect().translated(t->pos()));
+        }
+    }
 
     painter.fillRect(m_player->boundingRect().translated(m_player->pos()), Qt::blue);
     m_enemy->render(&painter);
@@ -127,7 +152,18 @@ void GameWindow::keyReleaseEvent(QKeyEvent *event) {
 }
 
 void GameWindow::resizeEvent(QResizeEvent *event) {
-    centerEnemyVertically();
+    createTiles();
+
+    QList<QGraphicsItem*> tileItems;
+    for (tile* t : m_tiles) {
+        tileItems.append(t);
+    }
+    m_enemy->setTiles(tileItems);
+    if (!m_tiles.isEmpty()) {
+        tile* firstTile = m_tiles.first();
+        m_enemy->setPosition(QPoint(firstTile->pos().x(), firstTile->pos().y() - m_enemy->boundingRect().height()));
+    }
+
     QMainWindow::resizeEvent(event);
 }
 
@@ -176,5 +212,23 @@ QString GameWindow::stateToString(Enemy::State state) const {
 void GameWindow::updateGame() {
     if (m_enemy) {
         m_enemy->update(width());
+    }
+}
+
+void GameWindow::createTiles() {
+    for (tile* t : m_tiles) {
+        delete t;
+    }
+    m_tiles.clear();
+
+    int tileWidth = 60;
+    int tileCount = 4;
+    int groundY = height() - 100;
+
+    int startX = 100;
+
+    for (int i = 0; i < tileCount; i++) {
+        tile* newTile = new tile(startX + i * tileWidth, groundY);
+        m_tiles.append(newTile);
     }
 }

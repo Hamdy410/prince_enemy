@@ -5,6 +5,7 @@
 #include <QPoint>
 #include <QGraphicsItem>
 #include <QPainter>
+#include <QList>
 
 #include "animation.h"
 
@@ -61,6 +62,10 @@ public:
     void attackPlayer();
     void updateCooldown();
 
+    void setTiles(const QList<QGraphicsItem*>& tiles) { m_tiles = tiles; }
+    void startPatrolling() { m_isPatrolling = true; }
+    void stopPatrolling() { m_isPatrolling = false; }
+
     QRectF boundingRect() const override {
         return QRectF(0, 0, m_animation->frameWidth(), m_animation->frameHeight());
     }
@@ -98,6 +103,11 @@ private:
     int m_attackCooldown;
     int m_currentCooldown;
     QGraphicsItem* m_player;
+
+    // Tile collision and interaction
+    QList<QGraphicsItem*> m_tiles;
+    bool m_isPatrolling;
+    bool checkForEdge();
 };
 
 #endif // ENEMY_H
