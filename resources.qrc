@@ -1,0 +1,9 @@
+<RCC>
+    <qresource prefix="/sprites">
+        <file>enemy_sprite.png</file>
+    </qresource>
+    <qresource prefix="/images">
+        <file>Prince_Spritesheet.png</file>
+        <file>EnvironSpriteOK.png</file>
+    </qresource>
+</RCC>

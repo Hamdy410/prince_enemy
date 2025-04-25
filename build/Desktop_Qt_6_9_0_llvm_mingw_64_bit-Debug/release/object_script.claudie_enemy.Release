@@ -1,0 +1,15 @@
+release/animation.o
+release/enemy.o
+release/gamewindow.o
+release/health.o
+release/main.o
+release/mainwindow.o
+release/player.o
+release/score.o
+release/tile.o
+release/qrc_resources.o
+release/moc_animation.o
+release/moc_enemy.o
+release/moc_gamewindow.o
+release/moc_mainwindow.o
+release/moc_player.o
