@@ -3,9 +3,12 @@
 
 #include <QObject>
 #include <QPoint>
+#include <QGraphicsItem>
+#include <QPainter>
+
 #include "animation.h"
 
-class Enemy : public QObject
+class Enemy : public QObject, public QGraphicsItem
 {
     Q_OBJECT
 
@@ -53,6 +56,25 @@ public:
 
     void forceCompleteCurrentAnimation();
 
+    void setPlayer(QGraphicsItem* player) { m_player = player; }
+    bool checkPlayerCollision();
+    void attackPlayer();
+    void updateCooldown();
+
+    QRectF boundingRect() const override {
+        return QRectF(0, 0, m_animation->frameWidth(), m_animation->frameHeight());
+    }
+
+    void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget *widget = nullptr) override {
+        Q_UNUSED(option);
+        Q_UNUSED(widget);
+
+        QPixmap frame = m_animation->currentFrame();
+        if (!frame.isNull()) {
+            painter->drawPixmap(0, 0, frame);
+        }
+    }
+
 signals:
     void positionChanged();
     void visualChanged();
@@ -70,6 +92,12 @@ private:
     QPoint m_position;
     int m_moveSpeed;
     int m_facingDirection;
+
+    // Player collision handling
+    bool m_isAttacking;
+    int m_attackCooldown;
+    int m_currentCooldown;
+    QGraphicsItem* m_player;
 };
 
 #endif // ENEMY_H

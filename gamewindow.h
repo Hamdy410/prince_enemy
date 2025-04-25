@@ -31,6 +31,7 @@ private:
     QString stateToString(Enemy::State state) const;
 
     Enemy *m_enemy;
+    QGraphicsItem *m_player;
     QTimer m_gameTimer;
     bool m_debugMode;
     int m_frameCounter;

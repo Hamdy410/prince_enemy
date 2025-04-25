@@ -23,6 +23,10 @@ void GameWindow::initializeGame() {
         qWarning() << "Failed to initialize enemy!";
     }
 
+    m_player = new QGraphicsRectItem(0, 0, 32, 64);
+    m_player->setPos(width() / 2, height() / 2);
+    m_enemy->setPlayer(m_player);
+
     m_enemy->setPosition(QPoint(width() / 2 - 32, height() / 2 - 32));
 
     connect(m_enemy, &Enemy::positionChanged, this, [this]() { update(); });
@@ -45,9 +49,11 @@ void GameWindow::initializeGame() {
 
 void GameWindow::paintEvent(QPaintEvent *event) {
     Q_UNUSED(event);
-
     QPainter painter(this);
+
     painter.fillRect(rect(), Qt::white);
+
+    painter.fillRect(m_player->boundingRect().translated(m_player->pos()), Qt::blue);
     m_enemy->render(&painter);
     m_frameCounter++;
     if (m_fpsTimer.elapsed() >= 1000) {

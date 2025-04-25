@@ -6,10 +6,14 @@
 Enemy::Enemy(QObject* parent)
     : QObject(parent)
     , m_animation(new Animation(this))
-    , m_moveSpeed(1)
+    , m_moveSpeed(2)
     , m_currentState(WALKRIGHT)
     , m_alive(true)
     , m_facingDirection(1)  // Add a dedicated direction variable (1=right, -1=left)
+    , m_isAttacking(false)
+    , m_attackCooldown(2000)
+    , m_currentCooldown(0)
+    , m_player(nullptr)
 {
     connect(m_animation, &Animation::frameChanged, this, [this](int) {
         emit visualChanged();
@@ -129,6 +133,13 @@ void Enemy::setPosition(const QPoint &pos) {
 }
 
 void Enemy::update(int windowWidth) {
+    updateCooldown();
+
+    if (checkPlayerCollision() && m_currentCooldown == 0) {
+        attackPlayer();
+        return;
+    }
+
     // Only move the enemy if in a movable state (walking) and animation is running
     if (m_animation->isRunning() && (m_currentState == WALKRIGHT || m_currentState == WALKLEFT)) {
         QPoint pos = m_position;
@@ -186,6 +197,15 @@ void Enemy::render(QPainter *painter) {
 
         painter->setPen(Qt::black);
         painter->drawText(m_position.x(), m_position.y() - 5, stateInfo);
+
+        // Draw cooldown indicator (for debugging)
+        if (m_currentCooldown > 0) {
+            int cooldownPercentage = (m_currentCooldown * 100) / m_attackCooldown;
+            int barWidth = m_animation->frameWidth();
+            int filledWidth = (barWidth * (100 - cooldownPercentage)) / 100;
+            painter->fillRect(m_position.x(), m_position.y() - 10, barWidth, 5, Qt::red);
+            painter->fillRect(m_position.x(), m_position.y() - 10, filledWidth, 5, Qt::green);
+        }
     }
 }
 
@@ -210,6 +230,7 @@ void Enemy::handleAnimationCompleted(const QString& stateName) {
     else if ((stateName == "attack_right" && m_currentState == ATTACKRIGHT) ||
              (stateName == "attack_left" && m_currentState == ATTACKLEFT)) {
         // Attack animation completed - transition back to appropriate walking state
+        m_isAttacking = false;
         State nextState = (m_facingDirection > 0) ? WALKRIGHT : WALKLEFT;
 
         // Set the next state
@@ -225,4 +246,37 @@ void Enemy::handleAnimationCompleted(const QString& stateName) {
 void Enemy::forceCompleteCurrentAnimation() {
     QString stateName = stateToString(m_currentState);
     handleAnimationCompleted(stateName);
+}
+
+bool Enemy::checkPlayerCollision() {
+    if (!m_player || !m_alive || m_isAttacking)
+        return false;
+
+    QRectF enemyRect(m_position, QSize(m_animation->frameWidth(), m_animation->frameHeight()));
+    QRectF playerRect = m_player->boundingRect().translated(m_player->pos());
+
+    return enemyRect.intersects(playerRect);
+}
+
+void Enemy::attackPlayer() {
+    if (m_isAttacking || m_currentCooldown > 0 || !m_alive)
+        return;
+
+    if (m_facingDirection > 0) {
+        setState(ATTACKRIGHT);
+    } else {
+        setState(ATTACKLEFT);
+    }
+
+    m_isAttacking = true;
+    m_currentCooldown = m_attackCooldown;
+}
+
+void Enemy::updateCooldown() {
+    if (m_currentCooldown > 0) {
+        m_currentCooldown -= 16;
+
+        if (m_currentCooldown < 0)
+            m_currentCooldown = 0;
+    }
 }
