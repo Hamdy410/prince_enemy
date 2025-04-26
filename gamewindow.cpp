@@ -301,4 +301,7 @@ void GameWindow::createTiles() {
 
     QList<tile*> platform2 = createTiles(400, height() - 200, 3, 60, true, 28);
     m_tiles.append(platform2);
+
+    QList<tile*> platform3 = createTiles(50, height() - 300, 5, 60, false, 28);
+    m_tiles.append(platform3);
 }

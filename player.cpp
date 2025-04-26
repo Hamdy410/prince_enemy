@@ -2,28 +2,21 @@
 #include "tile.h"
 
 #include <QTransform>
-#include <QDebug>
 #include <QPainter>
 #include <QPixmap>
 #include <QList>
+#include <QDebug>
 
 player::player(bool right, QObject* parent)
     : QObject(parent),
     m_score(),
     m_health(),
     statue(right ? StillRight : StillLeft),
-    m_x(100), // starting x position
-    m_y(100), // starting y position
-    groundy(100),
-    isJumping(0),
-    isFalling(false),
-    isHopping(0),
-    frame(0),
-    isClimb(false),
-    stopwalkingRight(false),
-    stopwalkingLeft(false)
+    m_x(100), m_y(100), groundy(100),
+    frame(0), isClimb(false),
+    isHopping(0), isJumping(0),
+    stopwalkingRight(false), stopwalkingLeft(false)
 {
-    // Load sprite sheet and prepare animation frames
     QPixmap SpriteSheet(":/images/Prince_Spritesheet.png");
     double width = SpriteSheet.width() / 14.0;
     double height = SpriteSheet.height() / 38.0;
@@ -38,9 +31,9 @@ player::player(bool right, QObject* parent)
     QList<QPixmap> walkright, walkleft;
     int x = 0;
     for (int i = 0; i < 14; ++i) {
-        QPixmap frame = SpriteSheet.copy(x, height, width, height);
-        walkright << frame;
-        walkleft << frame.transformed(transform);
+        QPixmap f = SpriteSheet.copy(x, height, width, height);
+        walkright << f;
+        walkleft << f.transformed(transform);
         x += width;
     }
     animationFrames << walkright << walkleft;
@@ -49,9 +42,9 @@ player::player(bool right, QObject* parent)
     QList<QPixmap> hopright, hopleft;
     x = 0;
     for (int i = 0; i < 14; ++i) {
-        QPixmap frame = SpriteSheet.copy(x, 7 * height, width, height);
-        hopright << frame;
-        hopleft << frame.transformed(transform);
+        QPixmap f = SpriteSheet.copy(x, 7 * height, width, height);
+        hopright << f;
+        hopleft << f.transformed(transform);
         x += width;
     }
     animationFrames << hopright << hopleft;
@@ -60,9 +53,9 @@ player::player(bool right, QObject* parent)
     QList<QPixmap> jumpright, jumpleft;
     x = 0;
     for (int i = 0; i < 13; ++i) {
-        QPixmap frame = SpriteSheet.copy(x, 15 * height, width, height);
-        jumpright << frame;
-        jumpleft << frame.transformed(transform);
+        QPixmap f = SpriteSheet.copy(x, 15 * height, width, height);
+        jumpright << f;
+        jumpleft << f.transformed(transform);
         x += width;
     }
     animationFrames << jumpright << jumpleft;
@@ -78,7 +71,7 @@ void player::handleKeyPress(QKeyEvent* event) {
             isClimb = false;
         } else if (event->key() == Qt::Key_Down) {
             statue = (statue == HangLeft) ? JumpLeft : JumpRight;
-            isFalling = true;
+            m_inAir = true;
             isClimb = false;
         }
         return;
@@ -127,14 +120,11 @@ void player::handleKeyRelease(QKeyEvent* event) {
     } else if (event->key() == Qt::Key_Space || event->key() == Qt::Key_Up) {
         if (isHopping != 2 && isJumping != 2) {
             isHopping = 0; isJumping = 0; frame = 0;
-            if (statue == StillRight) statue = StillRight;
-            if (statue == StillLeft) statue = StillLeft;
         }
     }
 }
 
 void player::update(const QList<tile*>& tiles) {
-    // Animation and movement logic
     switch (statue) {
     case WalkRight:
         if (!stopwalkingRight) {
@@ -143,7 +133,6 @@ void player::update(const QList<tile*>& tiles) {
             if (m_animCounter >= m_animDelay) {
                 frame++;
                 if (frame >= animationFrames[0].size()) frame = 0;
-                ++frame;
                 m_animCounter = 0;
             }
         }
@@ -155,7 +144,6 @@ void player::update(const QList<tile*>& tiles) {
             if (m_animCounter >= m_animDelay) {
                 frame++;
                 if (frame >= animationFrames[1].size()) frame = 0;
-                ++frame;
                 m_animCounter = 0;
             }
         }
@@ -214,29 +202,26 @@ void player::update(const QList<tile*>& tiles) {
         break;
     case ClimbRight:
     case ClimbLeft:
-        // TODO: Play climb animation, then move player on top of tile and set
-        // Still State
+        // TODO: Play climb animation, then move player on top of tile and set Still state
+        break;
     case HangRight:
     case HangLeft:
-        // TODO: Play hang animation / freeze movement
+        // TODO: Play hang animation, freeze movement
         break;
     }
 
-    checkCollisions(tiles);
-
+    // Apply gravity if in air
     if (m_inAir) {
         m_y += m_velocityY;
-        m_velocityY += 1.0f;
+        m_velocityY += 1.0f; // gravity
+    }
 
-        if (m_y >= groundy) {
-            m_y = groundy;
-            m_velocityY = 0.0f;
-            m_inAir = false;
+    // Always check collisions after movement/gravity
+    checkCollisions(tiles);
 
-            statue = (statue == JumpLeft || statue == WalkLeft) ? StillLeft : StillRight;
-            frame = 0;
-            m_animCounter = 0;
-        }
+    // If landed, reset velocity and air state
+    if (!m_inAir) {
+        m_velocityY = 0.0f;
     }
 }
 
@@ -267,13 +252,24 @@ void player::draw(QPainter* painter) {
     case StillLeft:
         framePixmap = currentImageLeft;
         break;
+    default:
+        framePixmap = currentImageRight;
+        break;
     }
     painter->drawPixmap(QPointF(m_x, m_y), framePixmap);
 
-    // Draw bounding box (for debugging)
+    // Debug: Draw bounding box and foot region
     QRectF box = boundingRect();
     painter->setPen(Qt::red);
     painter->drawRect(box.translated(m_x, m_y));
+
+    QRectF footRegion(
+        m_x + 3,
+        m_y + boundingRect().height(),
+        boundingRect().width() - 6,
+        2);
+    painter->setBrush(QColor(255, 0, 0, 100));
+    painter->drawRect(footRegion);
 }
 
 QRectF player::boundingRect() const {
@@ -296,55 +292,54 @@ void player::setGround(qreal groundY) {
     groundy = groundY;
 }
 
-void player::fall() {
-    if (!m_inAir && m_y < groundy) {
-        m_inAir = true;
-        m_velocityY = 0.0f;
-    }
-}
-
 void player::checkCollisions(const QList<tile *> &tiles) {
     QRectF playerBox = boundingRect().translated(m_x, m_y);
+    bool landed = false;
+
+    // 1. Check for landing on top of a tile
     for (const tile* t: tiles) {
         QRectF tileBox = t->boundingRect().translated(t->pos().x(), t->pos().y());
-        if (playerBox.intersects(tileBox)) {
-            float overlapLeft = playerBox.right() - tileBox.left();
-            float overlapRight = tileBox.right() - playerBox.left();
-            float overlapTop = playerBox.bottom() - tileBox.top();
-            float overlapBottom = tileBox.bottom() - playerBox.top();
-            float minOverlap = qMin(qMin(overlapLeft, overlapRight), qMin(overlapTop, overlapBottom));
+        float overlapLeft = playerBox.right() - tileBox.left();
+        float overlapRight = tileBox.right() - playerBox.left();
+        float overlapTop = playerBox.bottom() - tileBox.top();
+        float overlapBottom = tileBox.bottom() - playerBox.top();
+        float minOverlap = qMin(qMin(overlapLeft, overlapRight), qMin(overlapTop, overlapBottom));
 
-            if (minOverlap == overlapTop) {
+        if (playerBox.intersects(tileBox)) {
+            if (minOverlap == overlapTop && m_inAir && m_velocityY >= 0) {
+                // Landed from above
                 m_y = t->pos().y() - playerBox.height();
-                isFalling = false;
-                isClimb = false;
                 groundy = m_y;
-                stopwalkingRight = false;
-                stopwalkingLeft = false;
-            } else if (minOverlap == overlapBottom) {
-                if ((statue == JumpRight && overlapRight >= overlapLeft) ||
-                    (statue == JumpLeft && overlapRight <= overlapLeft)) {
-                    isClimb = true;
-                    isFalling = false;
-                    groundy = t->pos().y() - 0.9 * playerBox.height();
-                    statue = (statue == JumpLeft) ? HangLeft : HangRight;
-                    stopwalkingRight = false;
-                    stopwalkingLeft = false;
-                    return;
-                }
-                isFalling = false;
-            } else if (minOverlap == overlapRight) {
-                stopwalkingRight = true;
-            } else if (minOverlap == overlapLeft) {
-                stopwalkingLeft = true;
+                m_inAir = false;
+                m_velocityY = 0.0f;
+                landed = true;
+                break;
             }
-            return;
+            // TODO: Add ledge grab and side collision logic here if desired
         }
     }
 
-    stopwalkingRight = false;
-    stopwalkingLeft = false;
-    if (statue != JumpRight && statue != JumpLeft) {
-        isFalling = true;
+    // 2. If not landed, check if feet are supported
+    if (!landed) {
+        QRectF footRegion(
+            m_x + 3,
+            m_y + boundingRect().height(),
+            boundingRect().width() - 6,
+            2
+            );
+        bool supported = false;
+        for (const tile* t : tiles) {
+            QRectF tileBox = t->boundingRect().translated(t->pos().x(), t->pos().y());
+            if (tileBox.intersects(footRegion)) {
+                supported = true;
+                break;
+            }
+        }
+        // If not supported and not already in air or jumping/hopping, start falling
+        if (!supported && !m_inAir && statue != JumpRight && statue != JumpLeft &&
+            statue != HopRight && statue != HopLeft) {
+            m_inAir = true;
+            m_velocityY = 0.0f;
+        }
     }
 }
