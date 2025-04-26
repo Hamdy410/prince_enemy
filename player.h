@@ -52,8 +52,13 @@ private:
     QPixmap currentImageRight;
     QPixmap currentImageLeft;
     QList<QList<QPixmap>> animationFrames;
-    QTimer* timer;
     qreal groundy;
+
+    // Handling Animation; Author: Hamdy
+    int m_animCounter = 0;
+    int m_animDelay = 10;
+    float m_velocityY = 0.0f;
+    bool m_inAir = false;
 };
 
 #endif

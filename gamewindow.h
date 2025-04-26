@@ -7,6 +7,7 @@
 
 #include "enemy.h"
 #include "tile.h"
+#include "player.h"
 
 class GameWindow : public QMainWindow
 {
@@ -34,7 +35,7 @@ private:
     QList<tile*> createTiles(int startX, int y, int count, int tileWidth = 60, bool createEnemy = false, int overlap=10);
     void createTiles();
 
-    QGraphicsItem *m_player;
+    player *m_player;
     QList<tile*> m_tiles;
     QList<Enemy*> m_enemies;
 

@@ -1,4 +1,6 @@
 #include "gamewindow.h"
+#include "player.h"
+
 #include <QPainter>
 #include <QKeyEvent>
 #include <QDebug>
@@ -23,7 +25,7 @@ void GameWindow::initializeGame() {
     }
     m_enemies.clear();
 
-    m_player = new QGraphicsRectItem(0, 0, 32, 64);
+    m_player = new player(true, this);
     m_player->setPos(width() / 2, height() / 2);
 
     createTiles();
@@ -48,7 +50,7 @@ void GameWindow::initializeGame() {
         if (currentTile->hasEnemy()) {
             Enemy* enemy = new Enemy(this);
             if (enemy->initialize(":/sprites/enemy_sprite.png", 64, 64)) {
-                enemy->setPlayer(m_player);
+                enemy->setPlayer(nullptr);
 
                 QList<QGraphicsItem*> platformTiles = currentPlatform;
                 enemy->setTiles(platformTiles);
@@ -103,8 +105,7 @@ void GameWindow::paintEvent(QPaintEvent *event) {
         }
     }
 
-    // Draw the player
-    painter.fillRect(m_player->boundingRect().translated(m_player->pos()), Qt::blue);
+    m_player->draw(&painter);
 
 
     // Draw Enemies
@@ -127,38 +128,9 @@ void GameWindow::keyPressEvent(QKeyEvent *event) {
     if (event->isAutoRepeat())
         return;
 
-    Enemy* m_enemy = m_enemies.isEmpty() ? nullptr : m_enemies.first();
+    m_player->handleKeyPress(event);
 
     switch (event->key()) {
-    case Qt::Key_D:
-        m_enemy->setState(Enemy::WALKRIGHT);
-        break;
-    case Qt::Key_A:
-        m_enemy->setState(Enemy::WALKLEFT);
-        break;
-    case Qt::Key_R:
-        m_enemy->setState(Enemy::ATTACKRIGHT);
-        break;
-    case Qt::Key_L:
-        m_enemy->setState(Enemy::ATTACKLEFT);
-        break;
-    case Qt::Key_K:
-        m_enemy->setState(Enemy::DIERIGHT);
-        break;
-    case Qt::Key_J:
-        m_enemy->setState(Enemy::DIELEFT);
-        break;
-    case Qt::Key_Plus:
-    case Qt::Key_Equal:
-        m_enemy->setAnimationSpeed(m_enemy->animationSpeed() + 5);
-        qDebug() << "Animation speed: " << m_enemy->animationSpeed() << "FPS";
-        break;
-    case Qt::Key_Minus:
-        if (m_enemy->animationSpeed() > 5) {
-            m_enemy->setAnimationSpeed(m_enemy->animationSpeed() - 5);
-        }
-        qDebug() << "Animation Speed: " << m_enemy->animationSpeed() << "FPS";
-        break;
     case Qt::Key_T:
         toggleDebugMode();
         break;
@@ -181,6 +153,8 @@ void GameWindow::keyReleaseEvent(QKeyEvent *event) {
         return;
     }
 
+    m_player->handleKeyRelease(event);
+
     QMainWindow::keyReleaseEvent(event);
 }
 
@@ -188,6 +162,15 @@ void GameWindow::resizeEvent(QResizeEvent *event) {
     QMap<Enemy*, QList<QGraphicsItem*>> enemyPlatforms;
 
     createTiles();
+
+    if (!m_tiles.isEmpty()) {
+        tile* firstTile = m_tiles.first();
+        int playerStartX = firstTile->pos().x();
+        int playerStartY = firstTile->pos().y() - m_player->boundingRect().height();
+
+        m_player->setPos(playerStartX, playerStartY);
+        m_player->setGround(playerStartY);
+    }
 
     QList<QList<QGraphicsItem*>> platforms;
     QList<QGraphicsItem*> currentPlatform;
@@ -289,6 +272,9 @@ void GameWindow::updateGame() {
             enemy->update(width());
         }
     }
+
+    m_player->update();
+    update();
 }
 
 QList<tile*> GameWindow::createTiles(int startX, int y, int count, int tileWidth, bool createEnemy, int overlap) {

@@ -2,6 +2,8 @@
 #include <QTransform>
 #include <QDebug>
 #include <QPainter>
+#include <QPixmap>
+#include <QList>
 
 player::player(bool right, QObject* parent)
     : QObject(parent),
@@ -17,8 +19,7 @@ player::player(bool right, QObject* parent)
     frame(0),
     isClimb(false),
     stopwalkingRight(false),
-    stopwalkingLeft(false),
-    timer(new QTimer(this))
+    stopwalkingLeft(false)
 {
     // Load sprite sheet and prepare animation frames
     QPixmap SpriteSheet(":/images/Prince_Spritesheet.png");
@@ -64,10 +65,6 @@ player::player(bool right, QObject* parent)
     }
     animationFrames << jumpright << jumpleft;
 
-    // Set up the timer for animation and logic updates
-    connect(timer, &QTimer::timeout, this, &player::update);
-    timer->start(50); // 20 FPS
-
     groundy = m_y;
 }
 
@@ -95,8 +92,12 @@ void player::handleKeyPress(QKeyEvent* event) {
             isHopping = 1; isJumping = 0;
         }
     } else if (event->key() == Qt::Key_Up) {
-        if (isJumping != 2 && isHopping != 2) {
-            isJumping = 1; isHopping = 0;
+        if (!m_inAir) {
+            m_velocityY = -15.0f;
+            m_inAir = true;
+            statue = (statue == WalkLeft || statue == StillLeft) ? JumpLeft : JumpRight;
+            frame = 0;
+            m_animCounter = 0;
         }
     }
 }
@@ -123,15 +124,25 @@ void player::update() {
     case WalkRight:
         if (!stopwalkingRight) {
             m_x += 5;
-            if (frame >= animationFrames[0].size()) frame = 0;
-            ++frame;
+            m_animCounter++;
+            if (m_animCounter >= m_animDelay) {
+                frame++;
+                if (frame >= animationFrames[0].size()) frame = 0;
+                ++frame;
+                m_animCounter = 0;
+            }
         }
         break;
     case WalkLeft:
         if (!stopwalkingLeft) {
             m_x -= 5;
-            if (frame >= animationFrames[1].size()) frame = 0;
-            ++frame;
+            m_animCounter++;
+            if (m_animCounter >= m_animDelay) {
+                frame++;
+                if (frame >= animationFrames[1].size()) frame = 0;
+                ++frame;
+                m_animCounter = 0;
+            }
         }
         break;
     case StillRight:
@@ -141,64 +152,67 @@ void player::update() {
         frame = 0;
         break;
     case HopRight:
-        if (frame < 7) {
-            m_x += 10; m_y -= 5;
-            ++frame;
-        } else if (frame < 14) {
-            m_x += 10; m_y += 5;
-            ++frame;
-        } else {
-            m_y = groundy;
-            statue = StillRight;
-            isHopping = 0;
-            frame = 0;
+        m_animCounter++;
+        if (m_animCounter >= 4) {
+            if (frame < 7) {
+                m_x += 10; m_y -= 5;
+                ++frame;
+            } else if (frame < 14) {
+                m_x += 10; m_y += 5;
+                ++frame;
+            } else {
+                m_y = groundy;
+                statue = StillRight;
+                isHopping = 0;
+                frame = 0;
+            }
+            m_animCounter = 0;
         }
         break;
     case HopLeft:
-        if (frame < 7) {
-            m_x -= 10; m_y -= 5;
-            ++frame;
-        } else if (frame < 14) {
-            m_x -= 10; m_y += 5;
-            ++frame;
-        } else {
-            m_y = groundy;
-            statue = StillLeft;
-            isHopping = 0;
-            frame = 0;
+        m_animCounter++;
+        if (m_animCounter >= 4) {
+            if (frame < 7) {
+                m_x -= 10; m_y -= 5;
+                ++frame;
+            } else if (frame < 14) {
+                m_x -= 10; m_y += 5;
+                ++frame;
+            } else {
+                m_y = groundy;
+                statue = StillLeft;
+                isHopping = 0;
+                frame = 0;
+            }
+            m_animCounter = 0;
         }
         break;
     case JumpRight:
-        if (frame < 10) {
-            m_y -= 10;
-            ++frame;
-        } else if (frame < 13) {
-            if (!isClimb) m_y += 20;
-            ++frame;
-        } else {
-            m_y = groundy;
-            statue = StillRight;
-            isJumping = false;
-            frame = 0;
-        }
-        break;
     case JumpLeft:
-        if (frame < 10) {
-            m_y -= 10;
-            ++frame;
-        } else if (frame < 13) {
-            if (!isClimb) m_y += 20;
-            ++frame;
-        } else {
-            m_y = groundy;
-            statue = StillLeft;
-            isJumping = false;
-            frame = 0;
+        m_animCounter++;
+        if (m_animCounter >= m_animDelay) {
+            frame++;
+            if (statue == JumpRight && frame >= animationFrames[4].size()) frame = 0;
+            if (statue == JumpLeft && frame >= animationFrames[5].size()) frame = 0;
+            m_animCounter = 0;
         }
         break;
     }
 
-    fall();
+    if (m_inAir) {
+        m_y += m_velocityY;
+        m_velocityY += 1.0f;
+
+        if (m_y >= groundy) {
+            m_y = groundy;
+            m_velocityY = 0.0f;
+            m_inAir = false;
+
+            statue = (statue == JumpLeft || statue == WalkLeft) ? StillLeft : StillRight;
+            frame = 0;
+            m_animCounter = 0;
+        }
+    }
 }
 
 void player::draw(QPainter* painter) {
@@ -258,16 +272,8 @@ void player::setGround(qreal groundY) {
 }
 
 void player::fall() {
-    const int gravity = 5;
-
-    if (m_y < groundy) {
-        m_y += gravity;
-        if (m_y > groundy) {
-            m_y = groundy;
-        }
-        isFalling = true;
-    } else {
-        m_y = groundy;
-        isFalling = false;
+    if (!m_inAir && m_y < groundy) {
+        m_inAir = true;
+        m_velocityY = 0.0f;
     }
 }
