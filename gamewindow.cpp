@@ -229,7 +229,7 @@ void GameWindow::resizeEvent(QResizeEvent *event) {
                 m_enemies[enemyIndex]->setPosition(QPoint(
                     firstTile->pos().x(),
                     firstTile->pos().y() - m_enemies[enemyIndex]->boundingRect().height() + Enemy::ENEMY_TILE_OVERLAP
-                ));
+                    ));
             }
 
             enemyIndex++;
@@ -256,9 +256,9 @@ void GameWindow::drawDebugInfo(QPainter *painter) {
     }
 
     debugInfo << "D: Walk right | A: Walk left"
-               << "R: Attack right | L: Attack left"
-               << "K: Die right | J: Die left"
-               << "+/-: Adjust Speed | T: toggle debug";
+              << "R: Attack right | L: Attack left"
+              << "K: Die right | J: Die left"
+              << "+/-: Adjust Speed | T: toggle debug";
 
     debugInfo << QString("Enemies: %1").arg(m_enemies.size());
 
