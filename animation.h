@@ -1,3 +1,9 @@
+/*
+ * Author: Hamdy El-Madbouly
+ * Start Date: 17 Dec, 2025
+ * End Date: 18 Dec, 2025
+ */
+
 #ifndef ANIMATION_H
 #define ANIMATION_H
 

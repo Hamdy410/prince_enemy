@@ -1,3 +1,9 @@
+/*
+ * Author: Kareem Adel
+ * Start Date:
+ * End Date:
+ */
+
 #ifndef SCORE_H
 #define SCORE_H
 #include<QGraphicsTextItem>

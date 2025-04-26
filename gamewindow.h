@@ -1,3 +1,10 @@
+/*
+ * Author: Hamdy El-Madbouly
+ * Start Date: 17 Dec, 2025
+ * End Date:
+ * Description:
+ */
+
 #ifndef GAMEWINDOW_H
 #define GAMEWINDOW_H
 

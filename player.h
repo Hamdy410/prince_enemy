@@ -1,3 +1,12 @@
+/*
+ * Original Author: Kareem Adel
+ * Modified and re-implemented by: Hamdy El-Madbouly
+ * Start Date:
+ * Modification Date: 26 Dec, 2025
+ * End Date:
+ * Description:
+ */
+
 #ifndef PLAYER_H
 #define PLAYER_H
 
@@ -11,8 +20,11 @@
 #include "score.h"
 #include "health.h"
 
+class tile;
+
 enum movement {StillRight, StillLeft, WalkRight, WalkLeft, JumpRight,
-                JumpLeft, HopRight, HopLeft};
+                JumpLeft, HopRight, HopLeft, ClimbRight, ClimbLeft, HangRight,
+                HangLeft};
 
 class player : public QObject {
     Q_OBJECT
@@ -21,7 +33,7 @@ public:
     player(bool right = true, QObject* parent=nullptr);
     void handleKeyPress(QKeyEvent* event);
     void handleKeyRelease(QKeyEvent* event);
-    void update();
+    void update(const QList<tile*>& tiles);
     void draw(QPainter* painter);
     QRectF boundingRect() const;
     QPointF pos() const;
@@ -36,6 +48,8 @@ public:
     void setGround(qreal groundY);
 
     void fall();
+
+    void checkCollisions(const QList<tile*>& tiles);
 
 private:
     score m_score;
@@ -54,11 +68,15 @@ private:
     QList<QList<QPixmap>> animationFrames;
     qreal groundy;
 
-    // Handling Animation; Author: Hamdy
+    // Handling Animation; and refractorization requirements
+    // Author: Hamdy
     int m_animCounter = 0;
-    int m_animDelay = 10;
+    int m_animDelay = 8;
     float m_velocityY = 0.0f;
     bool m_inAir = false;
+    int climbFrame = 0;
+    int hangFrame = 0;
+
 };
 
 #endif

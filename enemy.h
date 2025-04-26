@@ -1,3 +1,10 @@
+/*
+ * Author: Hamdy El-Madbouly
+ * Start Date: 17 April, 2025
+ * End Date:
+ * Description:
+ */
+
 #ifndef ENEMY_H
 #define ENEMY_H
 

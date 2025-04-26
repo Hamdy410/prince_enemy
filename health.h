@@ -1,3 +1,9 @@
+/*
+ * Author: Kareem Adel
+ * Start Date:
+ * End Date:
+ */
+
 #ifndef HEALTH_H
 #define HEALTH_H
 #include<QGraphicsTextItem>

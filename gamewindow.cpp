@@ -273,7 +273,7 @@ void GameWindow::updateGame() {
         }
     }
 
-    m_player->update();
+    m_player->update(m_tiles);
     update();
 }
 

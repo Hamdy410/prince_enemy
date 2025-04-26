@@ -1,4 +1,6 @@
 #include "player.h"
+#include "tile.h"
+
 #include <QTransform>
 #include <QDebug>
 #include <QPainter>
@@ -69,6 +71,19 @@ player::player(bool right, QObject* parent)
 }
 
 void player::handleKeyPress(QKeyEvent* event) {
+    if (isClimb) {
+        if (event->key() == Qt::Key_Up) {
+            statue = (statue == HangLeft) ? ClimbLeft : ClimbRight;
+            climbFrame = 0;
+            isClimb = false;
+        } else if (event->key() == Qt::Key_Down) {
+            statue = (statue == HangLeft) ? JumpLeft : JumpRight;
+            isFalling = true;
+            isClimb = false;
+        }
+        return;
+    }
+
     if (event->key() == Qt::Key_Right) {
         if (isHopping == 2 || isJumping == 2) return;
         if (isHopping == 1 && isJumping != 1) {
@@ -118,7 +133,7 @@ void player::handleKeyRelease(QKeyEvent* event) {
     }
 }
 
-void player::update() {
+void player::update(const QList<tile*>& tiles) {
     // Animation and movement logic
     switch (statue) {
     case WalkRight:
@@ -197,7 +212,17 @@ void player::update() {
             m_animCounter = 0;
         }
         break;
+    case ClimbRight:
+    case ClimbLeft:
+        // TODO: Play climb animation, then move player on top of tile and set
+        // Still State
+    case HangRight:
+    case HangLeft:
+        // TODO: Play hang animation / freeze movement
+        break;
     }
+
+    checkCollisions(tiles);
 
     if (m_inAir) {
         m_y += m_velocityY;
@@ -275,5 +300,51 @@ void player::fall() {
     if (!m_inAir && m_y < groundy) {
         m_inAir = true;
         m_velocityY = 0.0f;
+    }
+}
+
+void player::checkCollisions(const QList<tile *> &tiles) {
+    QRectF playerBox = boundingRect().translated(m_x, m_y);
+    for (const tile* t: tiles) {
+        QRectF tileBox = t->boundingRect().translated(t->pos().x(), t->pos().y());
+        if (playerBox.intersects(tileBox)) {
+            float overlapLeft = playerBox.right() - tileBox.left();
+            float overlapRight = tileBox.right() - playerBox.left();
+            float overlapTop = playerBox.bottom() - tileBox.top();
+            float overlapBottom = tileBox.bottom() - playerBox.top();
+            float minOverlap = qMin(qMin(overlapLeft, overlapRight), qMin(overlapTop, overlapBottom));
+
+            if (minOverlap == overlapTop) {
+                m_y = t->pos().y() - playerBox.height();
+                isFalling = false;
+                isClimb = false;
+                groundy = m_y;
+                stopwalkingRight = false;
+                stopwalkingLeft = false;
+            } else if (minOverlap == overlapBottom) {
+                if ((statue == JumpRight && overlapRight >= overlapLeft) ||
+                    (statue == JumpLeft && overlapRight <= overlapLeft)) {
+                    isClimb = true;
+                    isFalling = false;
+                    groundy = t->pos().y() - 0.9 * playerBox.height();
+                    statue = (statue == JumpLeft) ? HangLeft : HangRight;
+                    stopwalkingRight = false;
+                    stopwalkingLeft = false;
+                    return;
+                }
+                isFalling = false;
+            } else if (minOverlap == overlapRight) {
+                stopwalkingRight = true;
+            } else if (minOverlap == overlapLeft) {
+                stopwalkingLeft = true;
+            }
+            return;
+        }
+    }
+
+    stopwalkingRight = false;
+    stopwalkingLeft = false;
+    if (statue != JumpRight && statue != JumpLeft) {
+        isFalling = true;
     }
 }
