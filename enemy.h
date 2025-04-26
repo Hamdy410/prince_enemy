@@ -32,10 +32,10 @@ public:
 
     // State Management
     bool setState(State state);
-    void setPosition(const QPoint& pos);
+    void setPosition(const QPointF& pos);
 
     // Position Management
-    QPoint position() const { return m_position; }
+    QPointF position() const { return m_position; }
 
     // Speed Control
     void setMoveSpeed(int speed) { m_moveSpeed = speed; }
@@ -94,8 +94,8 @@ private:
     QString stateToString(State state) const;
 
     Animation *m_animation;
-    QPoint m_position;
-    int m_moveSpeed;
+    QPointF m_position;
+    double m_moveSpeed;
     int m_facingDirection;
 
     // Player collision handling

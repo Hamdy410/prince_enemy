@@ -291,12 +291,13 @@ void GameWindow::updateGame() {
     }
 }
 
-QList<tile*> GameWindow::createTiles(int startX, int y, int count, int tileWidth, bool createEnemy) {
+QList<tile*> GameWindow::createTiles(int startX, int y, int count, int tileWidth, bool createEnemy, int overlap) {
     QList<tile*> tileList;
 
     for (int i = 0; i < count; i++) {
         bool tileHasEnemy = createEnemy && (i == 0);
-        tile* newTile = new tile(startX + i * tileWidth, y, tileHasEnemy);
+        int x = startX + i * (tileWidth - overlap);
+        tile* newTile = new tile(x, y, tileHasEnemy);
         tileList.append(newTile);
     }
 
@@ -309,9 +310,9 @@ void GameWindow::createTiles() {
     }
     m_tiles.clear();
 
-    QList<tile*> platform1 = createTiles(100, height() - 100, 4, 60, true);
+    QList<tile*> platform1 = createTiles(100, height() - 100, 10, 60, true, 28);
     m_tiles.append(platform1);
 
-    QList<tile*> platform2 = createTiles(400, height() - 200, 3, 60, true);
+    QList<tile*> platform2 = createTiles(400, height() - 200, 3, 60, true, 28);
     m_tiles.append(platform2);
 }

@@ -31,7 +31,7 @@ private:
     void drawDebugInfo(QPainter *painter);
     QString stateToString(Enemy::State state) const;
 
-    QList<tile*> createTiles(int startX, int y, int count, int tileWidth = 60, bool createEnemy = false);
+    QList<tile*> createTiles(int startX, int y, int count, int tileWidth = 60, bool createEnemy = false, int overlap=10);
     void createTiles();
 
     QGraphicsItem *m_player;

@@ -7,7 +7,7 @@
 Enemy::Enemy(QObject* parent)
     : QObject(parent)
     , m_animation(new Animation(this))
-    , m_moveSpeed(2)
+    , m_moveSpeed(1)
     , m_currentState(WALKRIGHT)
     , m_alive(true)
     , m_facingDirection(1)  // Add a dedicated direction variable (1=right, -1=left)
@@ -127,7 +127,7 @@ bool Enemy::setState(State state) {
     return false;
 }
 
-void Enemy::setPosition(const QPoint &pos) {
+void Enemy::setPosition(const QPointF &pos) {
     if (pos.x() != m_position.x() || pos.y() != m_position.y()) {
         m_position = pos;
         setPos(pos);
@@ -151,7 +151,7 @@ void Enemy::update(int windowWidth) {
             return;
         }
 
-        QPoint pos = m_position;
+        QPointF pos = m_position;
 
         // Use the facing direction to determine movement
         pos.setX(pos.x() + m_facingDirection * m_moveSpeed);
@@ -182,7 +182,7 @@ void Enemy::render(QPainter *painter) {
             painter->scale(-1, 1);
 
             // Draw the flipped frame at the origin (0,0) since we've translated
-            painter->drawPixmap(0, 0, frame);
+            painter->drawPixmap(QPointF(0, 0), frame);
 
             // Restore the painter state
             painter->restore();
@@ -192,23 +192,23 @@ void Enemy::render(QPainter *painter) {
         }
 
         // Draw debug information (bounding box and state text)
-        painter->setPen(Qt::red);
-        painter->drawRect(QRect(m_position, QSize(frame.width(), frame.height())));
+         painter->setPen(Qt::red);
+         painter->drawRect(QRectF(m_position, QSizeF(frame.width(), frame.height())));
 
         // State and direction indicator
         QString direction = (m_facingDirection < 0) ? "◄" : "►";
         QString stateInfo = QString("%1 %2 (Frame %3/%4)")
-                                .arg(stateToString(m_currentState))
+                                 .arg(stateToString(m_currentState))
                                 .arg(direction)
                                 .arg(m_animation->currentFrameIndex() + 1)
                                 .arg(m_animation->isLooping() ? "∞" :
                                          QString::number(m_animation->frameCount()));
 
-        painter->setPen(Qt::black);
-        painter->drawText(m_position.x(), m_position.y() - 5, stateInfo);
+         painter->setPen(Qt::black);
+         painter->drawText(m_position.x(), m_position.y() - 5, stateInfo);
 
         // Draw cooldown indicator (for debugging)
-        if (m_currentCooldown > 0) {
+         if (m_currentCooldown > 0) {
             int cooldownPercentage = (m_currentCooldown * 100) / m_attackCooldown;
             int barWidth = m_animation->frameWidth();
             int filledWidth = (barWidth * (100 - cooldownPercentage)) / 100;
