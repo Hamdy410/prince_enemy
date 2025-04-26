@@ -155,16 +155,20 @@ void player::update(const QList<tile*>& tiles) {
         frame = 0;
         break;
     case HopRight:
+        if (isHopping == 1) {
+            m_inAir = true;
+            isHopping = 2;
+            frame = 0;
+        }
         m_animCounter++;
         if (m_animCounter >= 4) {
             if (frame < 7) {
-                m_x += 10; m_y -= 5;
+                m_x += 10;
                 ++frame;
             } else if (frame < 14) {
-                m_x += 10; m_y += 5;
+                m_x += 10;
                 ++frame;
             } else {
-                m_y = groundy;
                 statue = StillRight;
                 isHopping = 0;
                 frame = 0;
@@ -173,16 +177,20 @@ void player::update(const QList<tile*>& tiles) {
         }
         break;
     case HopLeft:
+        if (isHopping == 1) {
+            m_inAir = true;
+            isHopping = 2;
+            frame = 0;
+        }
         m_animCounter++;
         if (m_animCounter >= 4) {
             if (frame < 7) {
-                m_x -= 10; m_y -= 5;
+                m_x -= 10;
                 ++frame;
             } else if (frame < 14) {
-                m_x -= 10; m_y += 5;
+                m_x -= 10;
                 ++frame;
             } else {
-                m_y = groundy;
                 statue = StillLeft;
                 isHopping = 0;
                 frame = 0;
@@ -261,20 +269,21 @@ void player::draw(QPainter* painter) {
         framePixmap = currentImageRight;
         break;
     }
-    painter->drawPixmap(QPointF(m_x, m_y), framePixmap);
+
+    painter->drawPixmap(QPointF(m_x, m_y + sinkOffset), framePixmap);
 
     // Debug: Draw bounding box and foot region
-    QRectF box = boundingRect();
-    painter->setPen(Qt::red);
-    painter->drawRect(box.translated(m_x, m_y));
+    // QRectF box = boundingRect();
+    // painter->setPen(Qt::red);
+    // painter->drawRect(box.translated(m_x, m_y));
 
     QRectF footRegion(
         m_x + 3,
         m_y + boundingRect().height(),
         boundingRect().width() - 6,
         2);
-    painter->setBrush(QColor(255, 0, 0, 100));
-    painter->drawRect(footRegion);
+    // painter->setBrush(QColor(255, 0, 0, 100));
+    // painter->drawRect(footRegion);
 }
 
 QRectF player::boundingRect() const {
@@ -299,7 +308,7 @@ void player::setGround(qreal groundY) {
 
 void player::checkCollisions(const QList<tile *> &tiles) {
     m_justLanded = false;
-    QRectF playerBox = boundingRect().translated(m_x, m_y);
+    QRectF playerBox = boundingRect().translated(m_x, m_y + sinkOffset);
 
     // 1. Check for landing on top of a tile
     for (const tile* t: tiles) {
@@ -328,7 +337,7 @@ void player::checkCollisions(const QList<tile *> &tiles) {
     if (!m_justLanded) {
         QRectF footRegion(
             m_x + 3,
-            m_y + boundingRect().height(),
+            m_y + boundingRect().height() - sinkOffset,
             boundingRect().width() - 6,
             2
             );

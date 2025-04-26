@@ -33,6 +33,8 @@ public:
     int Health() const { return m_health.value; }
     void setGround(qreal groundY);
 
+    static constexpr int sinkOffset = 6;
+
 private:
     void checkCollisions(const QList<tile*>& tiles);
 

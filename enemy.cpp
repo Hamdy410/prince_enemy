@@ -191,30 +191,30 @@ void Enemy::render(QPainter *painter) {
             painter->drawPixmap(m_position, frame);
         }
 
-        // Draw debug information (bounding box and state text)
-         painter->setPen(Qt::red);
-         painter->drawRect(QRectF(m_position, QSizeF(frame.width(), frame.height())));
+        // // Draw debug information (bounding box and state text)
+        //  painter->setPen(Qt::red);
+        //  painter->drawRect(QRectF(m_position, QSizeF(frame.width(), frame.height())));
 
-        // State and direction indicator
-        QString direction = (m_facingDirection < 0) ? "◄" : "►";
-        QString stateInfo = QString("%1 %2 (Frame %3/%4)")
-                                 .arg(stateToString(m_currentState))
-                                .arg(direction)
-                                .arg(m_animation->currentFrameIndex() + 1)
-                                .arg(m_animation->isLooping() ? "∞" :
-                                         QString::number(m_animation->frameCount()));
+        // // State and direction indicator
+        // QString direction = (m_facingDirection < 0) ? "◄" : "►";
+        // QString stateInfo = QString("%1 %2 (Frame %3/%4)")
+        //                          .arg(stateToString(m_currentState))
+        //                         .arg(direction)
+        //                         .arg(m_animation->currentFrameIndex() + 1)
+        //                         .arg(m_animation->isLooping() ? "∞" :
+        //                                  QString::number(m_animation->frameCount()));
 
-         painter->setPen(Qt::black);
-         painter->drawText(m_position.x(), m_position.y() - 5, stateInfo);
+        //  painter->setPen(Qt::black);
+        //  painter->drawText(m_position.x(), m_position.y() - 5, stateInfo);
 
-        // Draw cooldown indicator (for debugging)
-         if (m_currentCooldown > 0) {
-            int cooldownPercentage = (m_currentCooldown * 100) / m_attackCooldown;
-            int barWidth = m_animation->frameWidth();
-            int filledWidth = (barWidth * (100 - cooldownPercentage)) / 100;
-            painter->fillRect(m_position.x(), m_position.y() - 10, barWidth, 5, Qt::red);
-            painter->fillRect(m_position.x(), m_position.y() - 10, filledWidth, 5, Qt::green);
-        }
+        // // Draw cooldown indicator (for debugging)
+        //  if (m_currentCooldown > 0) {
+        //     int cooldownPercentage = (m_currentCooldown * 100) / m_attackCooldown;
+        //     int barWidth = m_animation->frameWidth();
+        //     int filledWidth = (barWidth * (100 - cooldownPercentage)) / 100;
+        //     painter->fillRect(m_position.x(), m_position.y() - 10, barWidth, 5, Qt::red);
+        //     painter->fillRect(m_position.x(), m_position.y() - 10, filledWidth, 5, Qt::green);
+        // }
     }
 }
 
