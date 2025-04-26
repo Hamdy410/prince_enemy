@@ -53,7 +53,7 @@ void GameWindow::initializeGame() {
                 QList<QGraphicsItem*> platformTiles = currentPlatform;
                 enemy->setTiles(platformTiles);
                 enemy->setPosition(QPoint(currentTile->pos().x(),
-                                          currentTile->pos().y() - enemy->boundingRect().height()));
+                                          currentTile->pos().y() - enemy->boundingRect().height() + enemy->ENEMY_TILE_OVERLAP));
                 enemy->startPatrolling();
                 m_enemies.append(enemy);
 
@@ -228,7 +228,7 @@ void GameWindow::resizeEvent(QResizeEvent *event) {
                 QGraphicsItem* firstTile = platforms[i].first();
                 m_enemies[enemyIndex]->setPosition(QPoint(
                     firstTile->pos().x(),
-                    firstTile->pos().y() - m_enemies[enemyIndex]->boundingRect().height()
+                    firstTile->pos().y() - m_enemies[enemyIndex]->boundingRect().height() + Enemy::ENEMY_TILE_OVERLAP
                 ));
             }
 

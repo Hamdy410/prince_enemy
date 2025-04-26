@@ -14,6 +14,8 @@ class Enemy : public QObject, public QGraphicsItem
     Q_OBJECT
 
 public:
+    static constexpr int ENEMY_TILE_OVERLAP = 10;
+
     enum State {
         WALKRIGHT,
         ATTACKRIGHT,

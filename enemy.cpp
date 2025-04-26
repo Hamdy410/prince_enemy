@@ -297,7 +297,7 @@ bool Enemy::checkForEdge() {
     // calculate the position where we need to check for ground
     // We check slightly ahead of the enemy in the direction it's facing
     int checkX = pos().x() + (m_facingDirection > 0 ? boundingRect().width() + 5 : -5);
-    int checkY = pos().y() + boundingRect().height() + 5; // check slightly below the feet
+    int checkY = pos().y() + boundingRect().height() + 5 - ENEMY_TILE_OVERLAP; // check slightly below the feet
 
     // Check if there's ground at this position
     QPointF checkPoint(checkX, checkY);
