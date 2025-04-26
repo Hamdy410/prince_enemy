@@ -101,7 +101,7 @@ void player::handleKeyPress(QKeyEvent* event) {
         }
     } else if (event->key() == Qt::Key_Up) {
         if (!m_inAir) {
-            m_velocityY = -15.0f;
+            m_velocityY = -12.0f;
             m_inAir = true;
             statue = (statue == WalkLeft || statue == StillLeft) ? JumpLeft : JumpRight;
             frame = 0;
@@ -193,7 +193,7 @@ void player::update(const QList<tile*>& tiles) {
     case JumpRight:
     case JumpLeft:
         m_animCounter++;
-        if (m_animCounter >= m_animDelay) {
+        if (m_animCounter >= 2) {
             frame++;
             if (statue == JumpRight && frame >= animationFrames[4].size()) frame = 0;
             if (statue == JumpLeft && frame >= animationFrames[5].size()) frame = 0;
@@ -218,6 +218,11 @@ void player::update(const QList<tile*>& tiles) {
 
     // Always check collisions after movement/gravity
     checkCollisions(tiles);
+
+    if (!m_inAir && (statue == JumpRight || statue == JumpLeft)) {
+        statue = (statue == JumpRight) ? StillRight : StillLeft;
+        frame = 0;
+    }
 
     // If landed, reset velocity and air state
     if (!m_inAir) {
@@ -293,8 +298,8 @@ void player::setGround(qreal groundY) {
 }
 
 void player::checkCollisions(const QList<tile *> &tiles) {
+    m_justLanded = false;
     QRectF playerBox = boundingRect().translated(m_x, m_y);
-    bool landed = false;
 
     // 1. Check for landing on top of a tile
     for (const tile* t: tiles) {
@@ -312,7 +317,7 @@ void player::checkCollisions(const QList<tile *> &tiles) {
                 groundy = m_y;
                 m_inAir = false;
                 m_velocityY = 0.0f;
-                landed = true;
+                m_justLanded = true;
                 break;
             }
             // TODO: Add ledge grab and side collision logic here if desired
@@ -320,7 +325,7 @@ void player::checkCollisions(const QList<tile *> &tiles) {
     }
 
     // 2. If not landed, check if feet are supported
-    if (!landed) {
+    if (!m_justLanded) {
         QRectF footRegion(
             m_x + 3,
             m_y + boundingRect().height(),
@@ -336,8 +341,7 @@ void player::checkCollisions(const QList<tile *> &tiles) {
             }
         }
         // If not supported and not already in air or jumping/hopping, start falling
-        if (!supported && !m_inAir && statue != JumpRight && statue != JumpLeft &&
-            statue != HopRight && statue != HopLeft) {
+        if (!supported && !m_inAir) {
             m_inAir = true;
             m_velocityY = 0.0f;
         }

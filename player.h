@@ -58,6 +58,7 @@ private:
     // Falling/jumping physics
     float m_velocityY = 0.0f;
     bool m_inAir = false;
+    bool m_justLanded = false;
 
     // Ledge grab helpers
     int climbFrame = 0;
