@@ -216,28 +216,28 @@ void Enemy::render(QPainter *painter) {
         //     painter->fillRect(m_position.x(), m_position.y() - 10, filledWidth, 5, Qt::green);
         // }
 
-        QRectF enemyRect(m_position, QSizeF(m_animation->frameWidth(), m_animation->frameHeight()));
+        // QRectF enemyRect(m_position, QSizeF(m_animation->frameWidth(), m_animation->frameHeight()));
         // Determine the hit region
 
-        QRectF hitRegion = enemyRect;
-        if (m_facingDirection > 0) {
-            hitRegion.setLeft(hitRegion.left() + hitRegion.width() / 2.0);
-        } else {
-            hitRegion.setWidth(hitRegion.width() / 2.0);
-        }
+        // QRectF hitRegion = enemyRect;
+        // if (m_facingDirection > 0) {
+        //     hitRegion.setLeft(hitRegion.left() + hitRegion.width() / 2.0);
+        // } else {
+        //     hitRegion.setWidth(hitRegion.width() / 2.0);
+        // }
 
-        painter->save();
-        painter->setPen(QPen(Qt::blue, 2));
-        painter->setBrush(QColor(0, 0, 255, 100));
-        painter->drawRect(hitRegion);
-        painter->restore();
+        // painter->save();
+        // painter->setPen(QPen(Qt::blue, 2));
+        // painter->setBrush(QColor(0, 0, 255, 100));
+        // painter->drawRect(hitRegion);
+        // painter->restore();
 
-        QRectF hurt = hurtRegion();
-        painter->save();
-        painter->setPen(QPen(Qt::red, 2));
-        painter->setBrush(QColor(255, 0, 0, 80));
-        painter->drawRect(hurt);
-        painter->restore();
+        // QRectF hurt = hurtRegion();
+        // painter->save();
+        // painter->setPen(QPen(Qt::red, 2));
+        // painter->setBrush(QColor(255, 0, 0, 80));
+        // painter->drawRect(hurt);
+        // painter->restore();
     }
 }
 

@@ -47,7 +47,7 @@ public:
     QRectF hurtRegion() const;
     QRectF hitRegion() const;
     bool isAttacking() const { return attackInProgress; }
-    QSet<void*> enemiesHitThisAttack() { return m_enemiesHitThisAttack; }
+    QSet<Enemy*>& enemiesHitThisAttack() { return m_enemiesHitThisAttack; }
 
 private:
     void checkCollisions(const QList<tile*>& tiles);
@@ -89,7 +89,7 @@ private:
     bool armingInProgress = false;
     bool unarmingInProgress = false;
     static constexpr int HURT_REGION_WIDTH = 27;
-    QSet<void*> m_enemiesHitThisAttack;
+    QSet<Enemy*> m_enemiesHitThisAttack;
 };
 
 #endif

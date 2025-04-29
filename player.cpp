@@ -415,25 +415,25 @@ void player::draw(QPainter* painter) {
     // painter->setBrush(QColor(255, 0, 0, 100));
     // painter->drawRect(footRegion);
 
-    QRectF playerBox = boundingRect().translated(m_x, m_y + sinkOffset);
-    qreal centerX = playerBox.left() + playerBox.width() / 2.0;
-    qreal hurtX = centerX - HURT_REGION_WIDTH / 2.0;
-    QRectF hurtRegion(hurtX, playerBox.top(), HURT_REGION_WIDTH, playerBox.height());
+    // QRectF playerBox = boundingRect().translated(m_x, m_y + sinkOffset);
+    // qreal centerX = playerBox.left() + playerBox.width() / 2.0;
+    // qreal hurtX = centerX - HURT_REGION_WIDTH / 2.0;
+    // QRectF hurtRegion(hurtX, playerBox.top(), HURT_REGION_WIDTH, playerBox.height());
 
-    painter->save();
-    painter->setPen(QPen(Qt::magenta, 2));
-    painter->setBrush(QColor(255, 0, 255, 90));
-    painter->drawRect(hurtRegion);
-    painter->restore();
+    // painter->save();
+    // painter->setPen(QPen(Qt::magenta, 2));
+    // painter->setBrush(QColor(255, 0, 255, 90));
+    // painter->drawRect(hurtRegion);
+    // painter->restore();
 
-    QRectF hit = hitRegion();
-    if (!hit.isNull()) {
-        painter->save();
-        painter->setPen(QPen(Qt::green, 2));
-        painter->setBrush(QColor(0, 255, 0, 80));
-        painter->drawRect(hit);
-        painter->restore();
-    }
+    // QRectF hit = hitRegion();
+    // if (!hit.isNull()) {
+    //     painter->save();
+    //     painter->setPen(QPen(Qt::green, 2));
+    //     painter->setBrush(QColor(0, 255, 0, 80));
+    //     painter->drawRect(hit);
+    //     painter->restore();
+    // }
 }
 
 QRectF player::boundingRect() const {

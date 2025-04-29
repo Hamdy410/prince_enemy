@@ -66,14 +66,14 @@ void GameWindow::initializeGame() {
                     update();
                 });
                 connect(enemy, &Enemy::died, this, [this, enemy, platformTiles]() {
-                    QTimer::singleShot(3000, this, [this, enemy, platformTiles]() {
-                        if (!platformTiles.isEmpty()) {
-                            QGraphicsItem* firstTile = platformTiles.first();
-                            enemy->setPosition(QPoint(firstTile->pos().x(), firstTile->pos().y() - enemy->boundingRect().height()));
-                        }
-                        enemy->m_alive = true;
-                        enemy->setState(Enemy::WALKRIGHT);
-                    });
+                    // QTimer::singleShot(3000, this, [this, enemy, platformTiles]() {
+                    //     if (!platformTiles.isEmpty()) {
+                    //         QGraphicsItem* firstTile = platformTiles.first();
+                    //         enemy->setPosition(QPoint(firstTile->pos().x(), firstTile->pos().y() - enemy->boundingRect().height()));
+                    //     }
+                    //     enemy->m_alive = true;
+                    //     enemy->setState(Enemy::WALKRIGHT);
+                    // });
                 });
             }
         }
