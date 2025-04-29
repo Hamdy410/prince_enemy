@@ -60,6 +60,40 @@ player::player(bool right, QObject* parent)
     }
     animationFrames << jumpright << jumpleft;
 
+    QList<QPixmap> armRight, armLeft;
+    x = 0;
+    for (int i = 0; i < 5; i++) {
+        QPixmap f = SpriteSheet.copy(x, 4 * height, width, height);
+        armRight << f;
+        armLeft << f.transformed(transform);
+        x += width;
+    }
+    animationFrames << armRight << armLeft;
+
+    QList<QPixmap> attackRight, attackLeft;
+    x = 0;
+    for (int i = 0; i < 8; i++) {
+        QPixmap f = SpriteSheet.copy(x, 5 * height, width, height);
+        attackRight << f;
+        attackLeft << f.transformed(transform);
+        x += width;
+    }
+    animationFrames << attackRight << attackLeft;
+
+    QList<QPixmap> unarmRight, unarmLeft;
+    x = 0;
+    for (int i = 0; i < 9; i++) {
+        QPixmap f = SpriteSheet.copy(x, 3 * height, width, height);
+        unarmRight << f;
+        unarmLeft << f.transformed(transform);
+        x += width;
+    }
+    animationFrames << unarmRight << unarmLeft;
+
+    qDebug() << "Animation Frames size:" << animationFrames.size();
+    for (int i = 0; i < animationFrames.size(); i++)
+        qDebug() << "animationFrames[" << i << "].size():" << animationFrames[i].size();
+
     groundy = m_y;
 }
 
@@ -106,6 +140,24 @@ void player::handleKeyPress(QKeyEvent* event) {
             statue = (statue == WalkLeft || statue == StillLeft) ? JumpLeft : JumpRight;
             frame = 0;
             m_animCounter = 0;
+        }
+    } else if (event->key() == Qt::Key_R) {
+        if (!swordOut && !armingInProgress && !attackInProgress && !unarmingInProgress) {
+            statue = (statue == StillLeft || statue == WalkLeft) ? ArmLeft : ArmRight;
+            frame = 0;
+            armingInProgress = true;
+        }
+    } else if (event->key() == Qt::Key_L) {
+        if (swordOut && !armingInProgress && !attackInProgress && !unarmingInProgress) {
+            statue = (statue == StillLeft || statue == WalkLeft || statue == SwordIdleLeft) ? UnarmLeft : UnarmRight;
+            frame = 0;
+            unarmingInProgress = true;
+        }
+    } else if (event->key() == Qt::Key_A) {
+        if (swordOut && !attackInProgress && !armingInProgress && !unarmingInProgress) {
+            statue = (statue == StillLeft || statue == SwordIdleLeft) ? AttackLeft : AttackRight;
+            frame = 0;
+            attackInProgress = true;
         }
     }
 }
@@ -216,6 +268,52 @@ void player::update(const QList<tile*>& tiles) {
     case HangLeft:
         // TODO: Play hang animation, freeze movement
         break;
+
+    case ArmRight:
+    case ArmLeft:
+        m_animCounter++;
+        if (m_animCounter >= m_animDelay) {
+            frame++;
+            if (frame >= animationFrames[6 + (statue == ArmLeft ? 1 : 0)].size()) {
+                swordOut = true;
+                armingInProgress = false;
+                statue = (statue == ArmLeft) ? SwordIdleLeft : SwordIdleRight;
+                frame = 0;
+            }
+            m_animCounter = 0;
+        }
+        break;
+    case AttackRight:
+    case AttackLeft:
+        m_animCounter++;
+        if (m_animCounter >= m_animDelay) {
+            frame++;
+            if (frame >= animationFrames[8 + (statue == AttackLeft ? 1 : 0)].size()) {
+                attackInProgress = false;
+                statue = (statue == AttackLeft) ? SwordIdleLeft : SwordIdleRight;
+                frame = 0;
+            }
+            m_animCounter = 0;
+        }
+        break;
+    case UnarmRight:
+    case UnarmLeft:
+        m_animCounter++;
+        if (m_animCounter >= m_animDelay) {
+            frame++;
+            if (frame >= animationFrames[10 + (statue == UnarmLeft ? 1 : 0)].size()) {
+                swordOut = false;
+                unarmingInProgress = false;
+                statue = (statue == UnarmLeft) ? StillLeft : StillRight;
+                frame = 0;
+            }
+            m_animCounter = 0;
+        }
+        break;
+    case SwordIdleRight:
+    case SwordIdleLeft:
+        frame = 0;
+        break;
     }
 
     // Apply gravity if in air
@@ -264,6 +362,30 @@ void player::draw(QPainter* painter) {
         break;
     case StillLeft:
         framePixmap = currentImageLeft;
+        break;
+    case ArmRight:
+        framePixmap = animationFrames[6][qMin(frame, animationFrames[6].size() - 1)];
+        break;
+    case ArmLeft:
+        framePixmap = animationFrames[7][qMin(frame, animationFrames[7].size() - 1)];
+        break;
+    case AttackRight:
+        framePixmap = animationFrames[8][qMin(frame, animationFrames[8].size() - 1)];
+        break;
+    case AttackLeft:
+        framePixmap = animationFrames[9][qMin(frame, animationFrames[9].size() - 1)];
+        break;
+    case UnarmRight:
+        framePixmap = animationFrames[10][qMin(frame, animationFrames[10].size() - 1)];
+        break;
+    case UnarmLeft:
+        framePixmap = animationFrames[11][qMin(frame, animationFrames[11].size() - 1)];
+        break;
+    case SwordIdleRight:
+        framePixmap = animationFrames[6][animationFrames[6].size() - 1];
+        break;
+    case SwordIdleLeft:
+        framePixmap = animationFrames[7][animationFrames[7].size() - 1];
         break;
     default:
         framePixmap = currentImageRight;

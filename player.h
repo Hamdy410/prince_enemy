@@ -14,7 +14,10 @@ class tile;
 enum movement {
     StillRight, StillLeft, WalkRight, WalkLeft,
     JumpRight, JumpLeft, HopRight, HopLeft,
-    ClimbRight, ClimbLeft, HangRight, HangLeft
+    ClimbRight, ClimbLeft, HangRight, HangLeft,
+    ArmRight, ArmLeft, UnarmRight, UnarmLeft,
+    SwordIdleRight, SwordIdleLeft, AttackLeft,
+    AttackRight
 };
 
 class player : public QObject {
@@ -65,6 +68,12 @@ private:
     // Ledge grab helpers
     int climbFrame = 0;
     int hangFrame = 0;
+
+    // Attack Animation Parameters
+    bool swordOut = false;
+    bool attackInProgress = false;
+    bool armingInProgress = false;
+    bool unarmingInProgress = false;
 };
 
 #endif
