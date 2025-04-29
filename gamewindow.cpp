@@ -86,6 +86,10 @@ void GameWindow::initializeGame() {
     m_gameTimer.setInterval(16);
     connect(&m_gameTimer, &QTimer::timeout, this, &GameWindow::updateGame);
     m_gameTimer.start();
+
+    for (Enemy* enemy: m_enemies) {
+        enemy->setPlayer(m_player);
+    }
 }
 
 void GameWindow::paintEvent(QPaintEvent *event) {
@@ -274,6 +278,20 @@ void GameWindow::updateGame() {
     }
 
     m_player->update(m_tiles);
+
+    // --- Player attack Logic ---
+    if (m_player->isAttacking()) {
+        QRectF playerHit = m_player->hitRegion();
+        for (Enemy* enemy : m_enemies) {
+            if (enemy->isAlive() &&
+                playerHit.intersects(enemy->hurtRegion()) &&
+                !m_player->enemiesHitThisAttack().contains(enemy)) {
+                enemy->takeDamage(1);
+                m_player->enemiesHitThisAttack().insert(enemy);
+            }
+        }
+    }
+
     update();
 }
 

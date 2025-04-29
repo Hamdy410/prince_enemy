@@ -215,6 +215,29 @@ void Enemy::render(QPainter *painter) {
         //     painter->fillRect(m_position.x(), m_position.y() - 10, barWidth, 5, Qt::red);
         //     painter->fillRect(m_position.x(), m_position.y() - 10, filledWidth, 5, Qt::green);
         // }
+
+        QRectF enemyRect(m_position, QSizeF(m_animation->frameWidth(), m_animation->frameHeight()));
+        // Determine the hit region
+
+        QRectF hitRegion = enemyRect;
+        if (m_facingDirection > 0) {
+            hitRegion.setLeft(hitRegion.left() + hitRegion.width() / 2.0);
+        } else {
+            hitRegion.setWidth(hitRegion.width() / 2.0);
+        }
+
+        painter->save();
+        painter->setPen(QPen(Qt::blue, 2));
+        painter->setBrush(QColor(0, 0, 255, 100));
+        painter->drawRect(hitRegion);
+        painter->restore();
+
+        QRectF hurt = hurtRegion();
+        painter->save();
+        painter->setPen(QPen(Qt::red, 2));
+        painter->setBrush(QColor(255, 0, 0, 80));
+        painter->drawRect(hurt);
+        painter->restore();
     }
 }
 
@@ -264,7 +287,17 @@ bool Enemy::checkPlayerCollision() {
     QRectF enemyRect(m_position, QSize(m_animation->frameWidth(), m_animation->frameHeight()));
     QRectF playerRect = m_player->boundingRect().translated(m_player->pos());
 
-    return enemyRect.intersects(playerRect);
+    // --- Define the "front half" hit region ---
+    QRectF hitRegion = enemyRect;
+    if (m_facingDirection > 0) {
+        // Facing right: right half
+        hitRegion.setLeft(hitRegion.left() + hitRegion.width() / 2.0);
+    } else {
+        // Facing left: left half
+        hitRegion.setWidth(hitRegion.width() / 2.0);
+    }
+
+    return hitRegion.intersects(m_player->hurtRegion());
 }
 
 void Enemy::attackPlayer() {
@@ -279,6 +312,11 @@ void Enemy::attackPlayer() {
 
     m_isAttacking = true;
     m_currentCooldown = m_attackCooldown;
+
+    // --- Damage the player here ---
+    if (m_player) {
+        m_player->takeDamage(1);
+    }
 }
 
 void Enemy::updateCooldown() {
@@ -315,4 +353,23 @@ bool Enemy::checkForEdge() {
     }
 
     return !foundGround;
+}
+
+void Enemy::takeDamage(int amount) {
+    m_health -= amount;
+    if (m_health <= 0) {
+        m_health = 0;
+        m_alive = false;
+        setState(m_facingDirection > 0 ? DIERIGHT : DIELEFT);
+        emit died();
+    }
+
+    qDebug() << "Enemy hit! Health is now:" << m_health;
+}
+
+QRectF Enemy::hurtRegion() const {
+    QRectF enemyBox(m_position, QSizeF(m_animation->frameWidth(), m_animation->frameHeight()));
+    qreal centerX = enemyBox.left() + enemyBox.width() / 2.0;
+    qreal hurtX = centerX - HURT_REGION_WIDTH / 2.0;
+    return QRectF(hurtX, enemyBox.top(), HURT_REGION_WIDTH, enemyBox.height());
 }

@@ -10,7 +10,7 @@
 player::player(bool right, QObject* parent)
     : QObject(parent),
     m_score(),
-    m_health(),
+    m_health(100),
     statue(right ? StillRight : StillLeft),
     m_x(100), m_y(100), groundy(100),
     frame(0), isClimb(false),
@@ -111,6 +111,12 @@ void player::handleKeyPress(QKeyEvent* event) {
         return;
     }
 
+    if ((swordOut || armingInProgress || attackInProgress || unarmingInProgress) &&
+        !(event->key() == Qt::Key_L || event->key() == Qt::Key_A))
+    {
+        return;
+    }
+
     if (event->key() == Qt::Key_Right) {
         if (isHopping == 2 || isJumping == 2) return;
         if (isHopping == 1 && isJumping != 1) {
@@ -158,6 +164,7 @@ void player::handleKeyPress(QKeyEvent* event) {
             statue = (statue == StillLeft || statue == SwordIdleLeft) ? AttackLeft : AttackRight;
             frame = 0;
             attackInProgress = true;
+            m_enemiesHitThisAttack.clear();
         }
     }
 }
@@ -290,6 +297,7 @@ void player::update(const QList<tile*>& tiles) {
             frame++;
             if (frame >= animationFrames[8 + (statue == AttackLeft ? 1 : 0)].size()) {
                 attackInProgress = false;
+                m_enemiesHitThisAttack.clear();
                 statue = (statue == AttackLeft) ? SwordIdleLeft : SwordIdleRight;
                 frame = 0;
             }
@@ -399,13 +407,33 @@ void player::draw(QPainter* painter) {
     // painter->setPen(Qt::red);
     // painter->drawRect(box.translated(m_x, m_y));
 
-    QRectF footRegion(
-        m_x + 3,
-        m_y + boundingRect().height(),
-        boundingRect().width() - 6,
-        2);
+    // QRectF footRegion(
+    //     m_x + 3,
+    //     m_y + boundingRect().height(),
+    //     boundingRect().width() - 6,
+    //     2);
     // painter->setBrush(QColor(255, 0, 0, 100));
     // painter->drawRect(footRegion);
+
+    QRectF playerBox = boundingRect().translated(m_x, m_y + sinkOffset);
+    qreal centerX = playerBox.left() + playerBox.width() / 2.0;
+    qreal hurtX = centerX - HURT_REGION_WIDTH / 2.0;
+    QRectF hurtRegion(hurtX, playerBox.top(), HURT_REGION_WIDTH, playerBox.height());
+
+    painter->save();
+    painter->setPen(QPen(Qt::magenta, 2));
+    painter->setBrush(QColor(255, 0, 255, 90));
+    painter->drawRect(hurtRegion);
+    painter->restore();
+
+    QRectF hit = hitRegion();
+    if (!hit.isNull()) {
+        painter->save();
+        painter->setPen(QPen(Qt::green, 2));
+        painter->setBrush(QColor(0, 255, 0, 80));
+        painter->drawRect(hit);
+        painter->restore();
+    }
 }
 
 QRectF player::boundingRect() const {
@@ -477,4 +505,30 @@ void player::checkCollisions(const QList<tile *> &tiles) {
             m_velocityY = 0.0f;
         }
     }
+}
+
+void player::takeDamage(int amount) {
+    m_health -= amount;
+    if (m_health < 0) m_health = 0;
+    qDebug() << "Player hit! Health is now:" << m_health;
+}
+
+QRectF player::hurtRegion() const {
+    QRectF playerBox = boundingRect().translated(m_x, m_y + sinkOffset);
+    qreal centerX = playerBox.left() + playerBox.width() / 2.0;
+    qreal hurtX = centerX - HURT_REGION_WIDTH / 2.0;
+    return QRectF(hurtX, playerBox.top(), HURT_REGION_WIDTH, playerBox.height());
+}
+
+QRectF player::hitRegion() const {
+    QRectF playerBox = boundingRect().translated(m_x, m_y + sinkOffset);
+    int swordLength = 40;
+    if (statue == AttackRight || statue == SwordIdleRight) {
+        return QRectF(playerBox.right(), playerBox.top() + playerBox.height() * 0.2, swordLength, playerBox.height() * 0.6);
+    } else if (statue == AttackLeft || statue == SwordIdleLeft) {
+        return QRectF(playerBox.left() - swordLength, playerBox.top() + playerBox.height() * 0.2,
+                      swordLength, playerBox.height() * 0.6);
+    }
+
+    return QRectF();
 }

@@ -6,10 +6,13 @@
 #include <QRectF>
 #include <QKeyEvent>
 #include <QList>
+#include <QSet>
+
 #include "score.h"
 #include "health.h"
 
 class tile;
+class Enemy;
 
 enum movement {
     StillRight, StillLeft, WalkRight, WalkLeft,
@@ -33,16 +36,27 @@ public:
     QPointF pos() const;
     void setPos(qreal x, qreal y);
     int Score() const { return m_score.value; }
-    int Health() const { return m_health.value; }
+    // int Health() const { return m_health.value; }
     void setGround(qreal groundY);
 
+    // Animation Movement dynamics
     static constexpr int sinkOffset = 6;
+
+    // Attack methods
+    void takeDamage(int amount);
+    QRectF hurtRegion() const;
+    QRectF hitRegion() const;
+    bool isAttacking() const { return attackInProgress; }
+    QSet<void*> enemiesHitThisAttack() { return m_enemiesHitThisAttack; }
 
 private:
     void checkCollisions(const QList<tile*>& tiles);
 
     score m_score;
-    health m_health;
+    // health m_health;
+
+    int m_health = 100;
+
     movement statue;
     qreal m_x, m_y;
     qreal groundy;
@@ -74,6 +88,8 @@ private:
     bool attackInProgress = false;
     bool armingInProgress = false;
     bool unarmingInProgress = false;
+    static constexpr int HURT_REGION_WIDTH = 27;
+    QSet<void*> m_enemiesHitThisAttack;
 };
 
 #endif

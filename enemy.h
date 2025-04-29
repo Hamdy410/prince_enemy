@@ -15,6 +15,7 @@
 #include <QList>
 
 #include "animation.h"
+#include "player.h"
 
 class Enemy : public QObject, public QGraphicsItem
 {
@@ -66,7 +67,7 @@ public:
 
     void forceCompleteCurrentAnimation();
 
-    void setPlayer(QGraphicsItem* player) { m_player = player; }
+    void setPlayer(player* p) { m_player = p; }
     bool checkPlayerCollision();
     void attackPlayer();
     void updateCooldown();
@@ -88,6 +89,10 @@ public:
             painter->drawPixmap(0, 0, frame);
         }
     }
+
+    void takeDamage(int amount);
+    QRectF hurtRegion() const;
+    int health() const { return m_health; }
 
 signals:
     void positionChanged();
@@ -111,12 +116,16 @@ private:
     bool m_isAttacking;
     int m_attackCooldown;
     int m_currentCooldown;
-    QGraphicsItem* m_player;
+    player* m_player;
 
     // Tile collision and interaction
     QList<QGraphicsItem*> m_tiles;
     bool m_isPatrolling;
     bool checkForEdge();
+
+    // Health dynamics
+    int m_health = 3;
+    static constexpr int HURT_REGION_WIDTH = 30;
 };
 
 #endif // ENEMY_H
