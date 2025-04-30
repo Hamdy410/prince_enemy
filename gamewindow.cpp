@@ -1,5 +1,6 @@
 #include "gamewindow.h"
 #include "player.h"
+#include "health.h"
 
 #include <QPainter>
 #include <QKeyEvent>
@@ -74,6 +75,7 @@ void GameWindow::initializeGame() {
                     //     enemy->m_alive = true;
                     //     enemy->setState(Enemy::WALKRIGHT);
                     // });
+                    m_player->scoreBar()->increase(10);
                 });
             }
         }
@@ -126,10 +128,29 @@ void GameWindow::paintEvent(QPaintEvent *event) {
     }
 
     if (m_debugMode) drawDebugInfo(&painter);
+
+    m_player->healthBar()->draw(&painter, 20, 20, 200, 20);
+    m_player->scoreBar()->draw(&painter, 20, 60);
+
+    if (m_gameOver) {
+        QPainter painter(this);
+        painter.setRenderHint(QPainter::Antialiasing, true);
+
+        // Draw semi-transparent black overlay
+        painter.fillRect(rect(), QColor(0, 0, 0, 180));
+
+        // Draw "Game Over" Text
+        QFont font("Arial", 48, QFont::Bold);
+        painter.setFont(font);
+        painter.setPen(Qt::white);
+        QString text = "Game Over";
+        QRect textRect = rect();
+        painter.drawText(textRect, Qt::AlignCenter, text);
+    }
 }
 
 void GameWindow::keyPressEvent(QKeyEvent *event) {
-    if (event->isAutoRepeat())
+    if (event->isAutoRepeat() || m_gameOver)
         return;
 
     m_player->handleKeyPress(event);
@@ -152,7 +173,7 @@ void GameWindow::keyPressEvent(QKeyEvent *event) {
 }
 
 void GameWindow::keyReleaseEvent(QKeyEvent *event) {
-    if (event->isAutoRepeat()) {
+    if (event->isAutoRepeat() || m_gameOver) {
         QMainWindow::keyReleaseEvent(event);
         return;
     }
@@ -271,6 +292,13 @@ QString GameWindow::stateToString(Enemy::State state) const {
 }
 
 void GameWindow::updateGame() {
+    // Check for player health
+    if (m_player->isDead() && !m_gameOver) {
+        m_gameOver = true;
+        m_gameTimer.stop();
+        update();
+    }
+
     for (Enemy* enemy : m_enemies) {
         if (enemy) {
             enemy->update(width());

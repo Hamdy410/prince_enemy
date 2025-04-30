@@ -6,13 +6,20 @@
 
 #ifndef HEALTH_H
 #define HEALTH_H
-#include<QGraphicsTextItem>
-class health: public QGraphicsTextItem{
+
+#include <QPainter>
+
+
+class Health {
 public:
-    health(QGraphicsItem* parent=0);
+    Health(int maxHealth = 100);
+    void decrease(int amount = 1);
+    void increase(int amount = 1);
+    void draw(QPainter* painter, int x, int y, int width = 200, int height = 20) const;
+
+private:
     int value;
-    void getdecrease();
-    void getincrease();
+    int maxValue;
 };
 
 

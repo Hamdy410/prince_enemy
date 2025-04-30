@@ -51,6 +51,8 @@ private:
     int m_frameCounter;
     int m_fps;
     QElapsedTimer m_fpsTimer;
+
+    bool m_gameOver = false;
 };
 
 #endif // GAMEWINDOW_H

@@ -6,13 +6,17 @@
 
 #ifndef SCORE_H
 #define SCORE_H
-#include<QGraphicsTextItem>
-class score: public QGraphicsTextItem{
+
+#include <QPainter>
+class Score {
 public:
-    score(QGraphicsItem* parent=0);
-    int value;
-    void getdecrease();
-    void getincrease();
+    Score();
+    void increase(int amount);
+    void reset() { points = 0; }
+    int value() const { return points; }
+    void draw(QPainter* painter, int x, int y) const;
+private:
+    int points;
 };
 
 

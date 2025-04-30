@@ -1,5 +1,7 @@
 #include "player.h"
 #include "tile.h"
+#include "health.h"
+#include "score.h"
 
 #include <QTransform>
 #include <QPainter>
@@ -9,13 +11,13 @@
 
 player::player(bool right, QObject* parent)
     : QObject(parent),
-    m_score(),
-    m_health(100),
+    m_health(3),
     statue(right ? StillRight : StillLeft),
     m_x(100), m_y(100), groundy(100),
     frame(0), isClimb(false),
     isHopping(0), isJumping(0),
-    stopwalkingRight(false), stopwalkingLeft(false)
+    stopwalkingRight(false), stopwalkingLeft(false),
+    m_healthBar(new Health(m_health)), m_scoreBar(new Score)
 {
     QPixmap SpriteSheet(":/images/Prince_Spritesheet.png");
     double width = SpriteSheet.width() / 14.0;
@@ -95,6 +97,11 @@ player::player(bool right, QObject* parent)
         qDebug() << "animationFrames[" << i << "].size():" << animationFrames[i].size();
 
     groundy = m_y;
+}
+
+player::~player() {
+    delete m_healthBar;
+    delete m_scoreBar;
 }
 
 void player::handleKeyPress(QKeyEvent* event) {
@@ -510,6 +517,7 @@ void player::checkCollisions(const QList<tile *> &tiles) {
 void player::takeDamage(int amount) {
     m_health -= amount;
     if (m_health < 0) m_health = 0;
+    m_healthBar->decrease(amount);
     qDebug() << "Player hit! Health is now:" << m_health;
 }
 

@@ -28,6 +28,7 @@ class player : public QObject {
 
 public:
     player(bool right = true, QObject* parent = nullptr);
+    ~player();
     void handleKeyPress(QKeyEvent* event);
     void handleKeyRelease(QKeyEvent* event);
     void update(const QList<tile*>& tiles);
@@ -35,7 +36,7 @@ public:
     QRectF boundingRect() const;
     QPointF pos() const;
     void setPos(qreal x, qreal y);
-    int Score() const { return m_score.value; }
+    // int Score() const { return m_score.value; }
     // int Health() const { return m_health.value; }
     void setGround(qreal groundY);
 
@@ -49,10 +50,15 @@ public:
     bool isAttacking() const { return attackInProgress; }
     QSet<Enemy*>& enemiesHitThisAttack() { return m_enemiesHitThisAttack; }
 
+    // Health and Score representations:
+    Health* healthBar() const { return m_healthBar; }
+    Score* scoreBar() const { return m_scoreBar; }
+    bool isDead() const { return m_health <= 0; }
+
 private:
     void checkCollisions(const QList<tile*>& tiles);
 
-    score m_score;
+    // score m_score;
     // health m_health;
 
     int m_health = 100;
@@ -90,6 +96,9 @@ private:
     bool unarmingInProgress = false;
     static constexpr int HURT_REGION_WIDTH = 27;
     QSet<Enemy*> m_enemiesHitThisAttack;
+
+    Health* m_healthBar;
+    Score* m_scoreBar;
 };
 
 #endif
