@@ -18,6 +18,10 @@ GameWindow::GameWindow(QWidget *parent) : QMainWindow(parent), m_debugMode(true)
 
 GameWindow::~GameWindow() {
     m_gameTimer.stop();
+
+    for (Enemy* enemy : m_enemies) delete enemy;
+    for (tile* t: m_tiles) delete t;
+    delete m_player;
 }
 
 void GameWindow::initializeGame() {
@@ -27,9 +31,17 @@ void GameWindow::initializeGame() {
     m_enemies.clear();
 
     m_player = new player(true, this);
-    m_player->setPos(width() / 2, height() / 2);
 
     createTiles();
+
+    if (!m_tiles.isEmpty()) {
+        tile* firstTile = m_tiles.first();
+        int playerStartX = firstTile->pos().x();
+        int playerStartY = firstTile->pos().y() - m_player->boundingRect().height();
+
+        m_player->setPos(playerStartX, playerStartY);
+        m_player->setGround(playerStartY);
+    }
 
     QList<QList<QGraphicsItem*>> platforms;
     QList<QGraphicsItem*> currentPlatform;
@@ -140,18 +152,48 @@ void GameWindow::paintEvent(QPaintEvent *event) {
         painter.fillRect(rect(), QColor(0, 0, 0, 180));
 
         // Draw "Game Over" Text
-        QFont font("Arial", 48, QFont::Bold);
-        painter.setFont(font);
+        QFont mainFont("Arial", 48, QFont::Bold);
+        painter.setFont(mainFont);
         painter.setPen(Qt::white);
-        QString text = "Game Over";
+        QString mainText = "Game Over";
         QRect textRect = rect();
-        painter.drawText(textRect, Qt::AlignCenter, text);
+        painter.drawText(textRect, Qt::AlignCenter, mainText);
+
+        // Draw subtext just below it.
+        QFont subFont("Arial", 20, QFont::Normal);
+        painter.setFont(subFont);
+        QString subText = "Press \"R\" to restart";
+
+        // Calculate position: center horizontally and a bit below the main
+        // text
+        QFontMetrics mainMetrics(mainFont);
+        int mainTextHeight = mainMetrics.boundingRect(mainText).height();
+        QFontMetrics subMetrics(subFont);
+        int subTextHeight = subMetrics.boundingRect(subText).height();
+
+        int centerX = rect().center().x();
+        int centerY = rect().center().y();
+
+        int subTextY = centerY + mainTextHeight / 2 + subTextHeight + 10;
+        QRect subTextRect(0, subTextY, rect().width(), subTextHeight + 10);
+        painter.drawText(subTextRect, Qt::AlignHCenter | Qt::AlignTop, subText);
     }
 }
 
 void GameWindow::keyPressEvent(QKeyEvent *event) {
-    if (event->isAutoRepeat() || m_gameOver)
+    if (event->isAutoRepeat())
         return;
+
+    if (m_gameOver) {
+        if (event->key() == Qt::Key_R) {
+            m_gameOver = false;
+            initializeGame();
+            m_gameTimer.start();
+            update();
+        }
+
+        return;
+    }
 
     m_player->handleKeyPress(event);
 
