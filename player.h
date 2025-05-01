@@ -97,8 +97,12 @@ private:
     static constexpr int HURT_REGION_WIDTH = 27;
     QSet<Enemy*> m_enemiesHitThisAttack;
 
+    // Health and Score Handling
     Health* m_healthBar;
     Score* m_scoreBar;
+
+    // Fall Damage system
+    float m_fallStartY = 0.0f;
 };
 
 #endif

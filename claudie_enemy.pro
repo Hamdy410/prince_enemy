@@ -13,6 +13,7 @@ SOURCES += \
     enemy.cpp \
     gamewindow.cpp \
     health.cpp \
+    level1window.cpp \
     main.cpp \
     mainwindow.cpp \
     player.cpp \
@@ -24,6 +25,7 @@ HEADERS += \
     enemy.h \
     gamewindow.h \
     health.h \
+    level1window.h \
     mainwindow.h \
     player.h \
     score.h \

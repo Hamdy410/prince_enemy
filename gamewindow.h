@@ -29,6 +29,10 @@ protected:
     void keyPressEvent(QKeyEvent *event) override;
     void keyReleaseEvent(QKeyEvent *event) override;
     void resizeEvent(QResizeEvent *event) override;
+    virtual void createTiles();
+    QList<tile*> createTiles(int startX, int y, int count, int tileWidth = 60,
+                              bool createEnemy = false, int overlap=10);
+    QList<tile*> m_tiles;
 
 private slots:
     void updateGame();
@@ -39,11 +43,7 @@ private:
     void drawDebugInfo(QPainter *painter);
     QString stateToString(Enemy::State state) const;
 
-    QList<tile*> createTiles(int startX, int y, int count, int tileWidth = 60, bool createEnemy = false, int overlap=10);
-    void createTiles();
-
     player *m_player;
-    QList<tile*> m_tiles;
     QList<Enemy*> m_enemies;
 
     QTimer m_gameTimer;

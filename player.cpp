@@ -229,10 +229,10 @@ void player::update(const QList<tile*>& tiles) {
         m_animCounter++;
         if (m_animCounter >= 4) {
             if (frame < 7) {
-                m_x += 10;
+                m_x += 10;  // Increased from 10 to 20
                 ++frame;
             } else if (frame < 14) {
-                m_x += 10;
+                m_x += 10;  // Increased from  10 to 20
                 ++frame;
             } else {
                 statue = StillRight;
@@ -251,10 +251,10 @@ void player::update(const QList<tile*>& tiles) {
         m_animCounter++;
         if (m_animCounter >= 4) {
             if (frame < 7) {
-                m_x -= 10;
+                m_x -= 10;  // Increased from 10 to 20
                 ++frame;
             } else if (frame < 14) {
-                m_x -= 10;
+                m_x -= 10;  // Increased from 10 to 20
                 ++frame;
             } else {
                 statue = StillLeft;
@@ -332,7 +332,7 @@ void player::update(const QList<tile*>& tiles) {
     }
 
     // Apply gravity if in air
-    if (m_inAir) {
+    if (m_inAir && statue != HopRight && statue != HopLeft) {
         m_y += m_velocityY;
         m_velocityY += 1.0f; // gravity
     }
@@ -484,6 +484,16 @@ void player::checkCollisions(const QList<tile *> &tiles) {
                 m_inAir = false;
                 m_velocityY = 0.0f;
                 m_justLanded = true;
+
+                // --- FALL DAMAGE LOGIC ---
+                float fallDistance = m_y - m_fallStartY;
+                const float FALL_DAMAGE_THRESHOLD = 100.0f;
+
+                if (fallDistance > FALL_DAMAGE_THRESHOLD) {
+                    takeDamage(1);
+                    qDebug() << "Fall Damage! Distance:" << fallDistance;
+                }
+
                 break;
             }
             // TODO: Add ledge grab and side collision logic here if desired
@@ -510,6 +520,7 @@ void player::checkCollisions(const QList<tile *> &tiles) {
         if (!supported && !m_inAir) {
             m_inAir = true;
             m_velocityY = 0.0f;
+            m_fallStartY = m_y; // Record the starting Y position for fall damage
         }
     }
 }

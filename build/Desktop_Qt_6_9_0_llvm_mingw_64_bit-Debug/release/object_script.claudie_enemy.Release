@@ -2,6 +2,7 @@ release/animation.o
 release/enemy.o
 release/gamewindow.o
 release/health.o
+release/level1window.o
 release/main.o
 release/mainwindow.o
 release/player.o
