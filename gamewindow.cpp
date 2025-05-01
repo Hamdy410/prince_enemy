@@ -14,6 +14,8 @@ GameWindow::GameWindow(QWidget *parent) : QMainWindow(parent), m_debugMode(true)
 
     initializeGame();
     m_fpsTimer.start();
+
+    connect(&m_gameTimer, &QTimer::timeout, this, &GameWindow::updateGame);
 }
 
 GameWindow::~GameWindow() {
@@ -63,6 +65,9 @@ void GameWindow::initializeGame() {
         if (currentTile->hasEnemy()) {
             Enemy* enemy = new Enemy(this);
             if (enemy->initialize(":/sprites/enemy_sprite.png", 64, 64)) {
+                enemy->setState(Enemy::WALKRIGHT);
+                enemy->resetAnimation();
+
                 enemy->setPlayer(nullptr);
 
                 QList<QGraphicsItem*> platformTiles = currentPlatform;
@@ -98,7 +103,6 @@ void GameWindow::initializeGame() {
     }
 
     m_gameTimer.setInterval(16);
-    connect(&m_gameTimer, &QTimer::timeout, this, &GameWindow::updateGame);
     m_gameTimer.start();
 
     for (Enemy* enemy: m_enemies) {
@@ -189,6 +193,11 @@ void GameWindow::keyPressEvent(QKeyEvent *event) {
             m_gameOver = false;
             initializeGame();
             m_gameTimer.start();
+            // --- Resize Workaround ---
+            QSize orig = size();
+            resize(orig.width(), orig.height() + 1);
+            resize(orig);
+            // -------------------------
             update();
         }
 

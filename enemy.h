@@ -94,6 +94,11 @@ public:
     QRectF hurtRegion() const;
     int health() const { return m_health; }
 
+    void resetAnimation() {
+        m_animation->stop();
+        m_animation->start(15);
+    }
+
 signals:
     void positionChanged();
     void visualChanged();
