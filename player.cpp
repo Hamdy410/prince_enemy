@@ -204,7 +204,7 @@ void player::update(const QList<tile*>& tiles) {
     switch (statue) {
     case WalkRight:
         if (!stopwalkingRight) {
-            m_x += 5;
+            m_x += 3;
             m_animCounter++;
             if (m_animCounter >= m_animDelay) {
                 frame++;
@@ -215,7 +215,7 @@ void player::update(const QList<tile*>& tiles) {
         break;
     case WalkLeft:
         if (!stopwalkingLeft) {
-            m_x -= 5;
+            m_x -= 3;
             m_animCounter++;
             if (m_animCounter >= m_animDelay) {
                 frame++;
@@ -344,10 +344,10 @@ void player::update(const QList<tile*>& tiles) {
     // Allow air control (move left/right in air) when not hopping
     if (m_inAir && statue != HopRight && statue != HopLeft) {
         if (rightPressed && !stopwalkingRight) {
-            m_x += 5; // or a lower value for less air control
+            m_x += 3; // or a lower value for less air control
         }
         if (leftPressed && !stopwalkingLeft) {
-            m_x -= 5;
+            m_x -= 3;
         }
     }
     // ---- END AIR CONTROL BLOCK ----
@@ -362,7 +362,13 @@ void player::update(const QList<tile*>& tiles) {
     checkCollisions(tiles);
 
     if (!m_inAir && (statue == JumpRight || statue == JumpLeft)) {
-        statue = (statue == JumpRight) ? StillRight : StillLeft;
+        if (rightPressed && !stopwalkingRight)
+            statue = WalkRight;
+        else if (leftPressed && !stopwalkingLeft)
+            statue = WalkLeft;
+        else
+            statue = (statue == JumpRight) ? StillRight : StillLeft;
+
         frame = 0;
     }
 
