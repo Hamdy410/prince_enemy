@@ -156,6 +156,7 @@ void player::handleKeyPress(QKeyEvent* event) {
             statue = (statue == WalkLeft || statue == StillLeft) ? JumpLeft : JumpRight;
             frame = 0;
             m_animCounter = 0;
+            jumpBufferFrames = 0;
         }
     } else if (event->key() == Qt::Key_R) {
         if (!swordOut && !armingInProgress && !attackInProgress && !unarmingInProgress) {
@@ -201,6 +202,8 @@ void player::handleKeyRelease(QKeyEvent* event) {
 }
 
 void player::update(const QList<tile*>& tiles) {
+    if (jumpBufferFrames > 0) jumpBufferFrames--;
+
     switch (statue) {
     case WalkRight:
         if (!stopwalkingRight) {
@@ -360,6 +363,16 @@ void player::update(const QList<tile*>& tiles) {
 
     // Always check collisions after movement/gravity
     checkCollisions(tiles);
+
+    if (m_justLanded && jumpBufferFrames > 0) {
+        m_velocityY = -12.0f; // or your jump velocity
+        m_inAir = true;
+        statue = (statue == WalkLeft || statue == StillLeft) ? JumpLeft : JumpRight;
+        frame = 0;
+        m_animCounter = 0;
+        jumpBufferFrames = 0; // Consume the buffer
+    }
+
 
     if (!m_inAir && (statue == JumpRight || statue == JumpLeft)) {
         if (rightPressed && !stopwalkingRight)

@@ -108,6 +108,9 @@ private:
     bool rightPressed = false;
     bool leftPressed = false;
     bool upPressed = false;
+
+    int jumpBufferFrames = 0;
+    const int JUMP_BUFFER_MAX = 4;
 };
 
 #endif
