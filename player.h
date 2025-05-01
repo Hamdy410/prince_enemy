@@ -103,6 +103,11 @@ private:
 
     // Fall Damage system
     float m_fallStartY = 0.0f;
+
+    // Right and jump simultaneously
+    bool rightPressed = false;
+    bool leftPressed = false;
+    bool upPressed = false;
 };
 
 #endif

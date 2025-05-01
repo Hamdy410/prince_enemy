@@ -125,6 +125,7 @@ void player::handleKeyPress(QKeyEvent* event) {
     }
 
     if (event->key() == Qt::Key_Right) {
+        rightPressed = true;
         if (isHopping == 2 || isJumping == 2) return;
         if (isHopping == 1 && isJumping != 1) {
             isHopping = 2; frame = 0; statue = HopRight;
@@ -134,6 +135,7 @@ void player::handleKeyPress(QKeyEvent* event) {
             statue = WalkRight;
         }
     } else if (event->key() == Qt::Key_Left) {
+        leftPressed = true;
         if (isHopping == 2 || isJumping == 2) return;
         if (isHopping == 1 && isJumping != 1) {
             isHopping = 2; frame = 0; statue = HopLeft;
@@ -147,6 +149,7 @@ void player::handleKeyPress(QKeyEvent* event) {
             isHopping = 1; isJumping = 0;
         }
     } else if (event->key() == Qt::Key_Up) {
+        upPressed = true;
         if (!m_inAir) {
             m_velocityY = -12.0f;
             m_inAir = true;
@@ -178,12 +181,19 @@ void player::handleKeyPress(QKeyEvent* event) {
 
 void player::handleKeyRelease(QKeyEvent* event) {
     if (event->key() == Qt::Key_Right) {
+        rightPressed = false;
         if (isHopping != 2 && isJumping != 2)
             statue = StillRight;
     } else if (event->key() == Qt::Key_Left) {
+        leftPressed = false;
         if (isHopping != 2 && isJumping != 2)
             statue = StillLeft;
-    } else if (event->key() == Qt::Key_Space || event->key() == Qt::Key_Up) {
+    } else if (event->key() == Qt::Key_Space) {
+        if (isHopping != 2 && isJumping != 2) {
+            isHopping = 0; isJumping = 0; frame = 0;
+        }
+    } else if (event->key() == Qt::Key_Up) {
+        upPressed = false;
         if (isHopping != 2 && isJumping != 2) {
             isHopping = 0; isJumping = 0; frame = 0;
         }
@@ -229,10 +239,10 @@ void player::update(const QList<tile*>& tiles) {
         m_animCounter++;
         if (m_animCounter >= 4) {
             if (frame < 7) {
-                m_x += 10;  // Increased from 10 to 20
+                m_x += 10;
                 ++frame;
             } else if (frame < 14) {
-                m_x += 10;  // Increased from  10 to 20
+                m_x += 10;
                 ++frame;
             } else {
                 statue = StillRight;
@@ -251,10 +261,10 @@ void player::update(const QList<tile*>& tiles) {
         m_animCounter++;
         if (m_animCounter >= 4) {
             if (frame < 7) {
-                m_x -= 10;  // Increased from 10 to 20
+                m_x -= 10;
                 ++frame;
             } else if (frame < 14) {
-                m_x -= 10;  // Increased from 10 to 20
+                m_x -= 10;
                 ++frame;
             } else {
                 statue = StillLeft;
@@ -282,7 +292,6 @@ void player::update(const QList<tile*>& tiles) {
     case HangLeft:
         // TODO: Play hang animation, freeze movement
         break;
-
     case ArmRight:
     case ArmLeft:
         m_animCounter++;
@@ -331,6 +340,18 @@ void player::update(const QList<tile*>& tiles) {
         break;
     }
 
+    // ---- AIR CONTROL BLOCK ----
+    // Allow air control (move left/right in air) when not hopping
+    if (m_inAir && statue != HopRight && statue != HopLeft) {
+        if (rightPressed && !stopwalkingRight) {
+            m_x += 5; // or a lower value for less air control
+        }
+        if (leftPressed && !stopwalkingLeft) {
+            m_x -= 5;
+        }
+    }
+    // ---- END AIR CONTROL BLOCK ----
+
     // Apply gravity if in air
     if (m_inAir && statue != HopRight && statue != HopLeft) {
         m_y += m_velocityY;
@@ -350,6 +371,7 @@ void player::update(const QList<tile*>& tiles) {
         m_velocityY = 0.0f;
     }
 }
+
 
 void player::draw(QPainter* painter) {
     QPixmap framePixmap;
