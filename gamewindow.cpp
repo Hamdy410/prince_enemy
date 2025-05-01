@@ -1,6 +1,7 @@
 #include "gamewindow.h"
 #include "player.h"
 #include "health.h"
+#include "spikes.h"
 
 #include <QPainter>
 #include <QKeyEvent>
@@ -11,8 +12,6 @@ GameWindow::GameWindow(QWidget *parent) : QMainWindow(parent), m_debugMode(true)
 {
     setWindowTitle("Enemy Game");
     resize(640, 480);
-
-    initializeGame();
     m_fpsTimer.start();
 
     connect(&m_gameTimer, &QTimer::timeout, this, &GameWindow::updateGame);
@@ -23,6 +22,7 @@ GameWindow::~GameWindow() {
 
     for (Enemy* enemy : m_enemies) delete enemy;
     for (tile* t: m_tiles) delete t;
+    for (Spikes* spike : m_spikes) delete spike;
     delete m_player;
 }
 
@@ -31,6 +31,8 @@ void GameWindow::initializeGame() {
         delete enemy;
     }
     m_enemies.clear();
+    for (Spikes* spike : m_spikes) delete spike;
+    m_spikes.clear();
 
     m_player = new player(true, this);
 
@@ -128,6 +130,11 @@ void GameWindow::paintEvent(QPaintEvent *event) {
     }
 
     m_player->draw(&painter);
+
+    // Draw Spikes
+    for (Spikes* spike : m_spikes) {
+        spike->render(&painter);
+    }
 
 
     // Draw Enemies
@@ -235,6 +242,7 @@ void GameWindow::keyReleaseEvent(QKeyEvent *event) {
 }
 
 void GameWindow::resizeEvent(QResizeEvent *event) {
+
     QMap<Enemy*, QList<QGraphicsItem*>> enemyPlatforms;
 
     createTiles();
@@ -371,10 +379,23 @@ void GameWindow::updateGame() {
         }
     }
 
+    for (Spikes* spike : m_spikes) {
+        if (!spike || !m_player) continue;
+
+        spike->Update(m_player);
+        QRectF playerRect = m_player->hurtRegion();
+        QRectF spikeRect = spike->hitRegion();
+
+        if (playerRect.intersects(spikeRect))
+            spike->onCollide(m_player);
+    }
+
     update();
 }
 
-QList<tile*> GameWindow::createTiles(int startX, int y, int count, int tileWidth, bool createEnemy, int overlap) {
+QList<tile*> GameWindow::createTiles(int startX, int y, int count,
+                                      int tileWidth, bool createEnemy,
+                                      int overlap, const QList<int>& spikeIndices) {
     QList<tile*> tileList;
 
     for (int i = 0; i < count; i++) {
@@ -382,6 +403,13 @@ QList<tile*> GameWindow::createTiles(int startX, int y, int count, int tileWidth
         int x = startX + i * (tileWidth - overlap);
         tile* newTile = new tile(x, y, tileHasEnemy);
         tileList.append(newTile);
+
+        if (spikeIndices.contains(i)) {
+            // Place spike on top of the tile
+            Spikes* spike = new Spikes(QPointF(x, y - Spikes::FRAME_HEIGHT + Spikes::SPIKE_SINK_OFFSET_Y));
+            spike->setOffset(0, 6);
+            m_spikes.append(spike);
+        }
     }
 
     return tileList;
@@ -393,12 +421,12 @@ void GameWindow::createTiles() {
     }
     m_tiles.clear();
 
-    QList<tile*> platform1 = createTiles(100, height() - 100, 10, 60, true, 28);
+    QList<tile*> platform1 = createTiles(100, height() - 100, 10, 60, true, 28, QList<int>{3, 5});
     m_tiles.append(platform1);
 
-    QList<tile*> platform2 = createTiles(400, height() - 200, 3, 60, true, 28);
+    QList<tile*> platform2 = createTiles(400, height() - 200, 3, 60, true, 28, QList<int>{1});
     m_tiles.append(platform2);
 
-    QList<tile*> platform3 = createTiles(50, height() - 300, 5, 60, false, 28);
+    QList<tile*> platform3 = createTiles(50, height() - 300, 5, 60, false, 28, QList<int>{2});
     m_tiles.append(platform3);
 }

@@ -15,6 +15,7 @@
 #include "enemy.h"
 #include "tile.h"
 #include "player.h"
+#include "spikes.h"
 
 class GameWindow : public QMainWindow
 {
@@ -25,21 +26,23 @@ public:
     ~GameWindow();
 
 protected:
+    void initializeGame();
     void paintEvent(QPaintEvent *event) override;
     void keyPressEvent(QKeyEvent *event) override;
     void keyReleaseEvent(QKeyEvent *event) override;
     void resizeEvent(QResizeEvent *event) override;
     virtual void createTiles();
     QList<tile*> createTiles(int startX, int y, int count, int tileWidth = 60,
-                              bool createEnemy = false, int overlap=10);
+                            bool createEnemy = false, int overlap=10,
+                            const QList<int>& spikeIndices = QList<int>());
     QList<tile*> m_tiles;
+    QList<Spikes*> m_spikes;
 
 private slots:
     void updateGame();
     void toggleDebugMode() { m_debugMode = !m_debugMode; update(); }
 
 private:
-    void initializeGame();
     void drawDebugInfo(QPainter *painter);
     QString stateToString(Enemy::State state) const;
 

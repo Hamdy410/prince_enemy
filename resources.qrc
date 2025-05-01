@@ -5,5 +5,6 @@
     <qresource prefix="/images">
         <file>Prince_Spritesheet.png</file>
         <file>EnvironSpriteOK.png</file>
+        <file>spikes.png</file>
     </qresource>
 </RCC>

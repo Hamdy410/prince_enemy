@@ -16,8 +16,10 @@ SOURCES += \
     level1window.cpp \
     main.cpp \
     mainwindow.cpp \
+    obstacle.cpp \
     player.cpp \
     score.cpp \
+    spikes.cpp \
     tile.cpp
 
 HEADERS += \
@@ -27,8 +29,10 @@ HEADERS += \
     health.h \
     level1window.h \
     mainwindow.h \
+    obstacle.h \
     player.h \
     score.h \
+    spikes.h \
     tile.h
 
 FORMS += \

@@ -5,12 +5,16 @@ debug/health.o
 debug/level1window.o
 debug/main.o
 debug/mainwindow.o
+debug/obstacle.o
 debug/player.o
 debug/score.o
+debug/spikes.o
 debug/tile.o
 debug/qrc_resources.o
 debug/moc_animation.o
 debug/moc_enemy.o
 debug/moc_gamewindow.o
 debug/moc_mainwindow.o
+debug/moc_obstacle.o
 debug/moc_player.o
+debug/moc_spikes.o
