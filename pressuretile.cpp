@@ -1,9 +1,9 @@
 #include "pressuretile.h"
 
 PressureTile::PressureTile(int x, int y, bool hasEnemy)
-    : tile(x, y - 1, hasEnemy),
+    : tile(x, y - 2, hasEnemy),
     m_pressed(false),
-    m_normalY(y - 1),
+    m_normalY(y - 2),
     m_pressedY(y)
 {
     setPos(x, m_normalY);
