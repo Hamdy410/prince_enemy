@@ -130,8 +130,6 @@ void GameWindow::paintEvent(QPaintEvent *event) {
         }
     }
 
-    m_player->draw(&painter);
-
     // Draw Spikes
     for (Spikes* spike : m_spikes) {
         spike->render(&painter);
@@ -142,6 +140,19 @@ void GameWindow::paintEvent(QPaintEvent *event) {
     for (Enemy* enemy : m_enemies) {
         enemy->render(&painter);
     }
+
+    // Draw gates
+    for (Gate* gate : m_gates) {
+        painter.drawPixmap(gate->pos(), gate->pixmap());
+
+        if (m_debugMode) {
+            painter.setPen(QPen(Qt::red, 2));
+            painter.drawRect(gate->boundingRect().translated(gate->pos()));
+        }
+    }
+
+    // Draw player
+    m_player->draw(&painter);
 
 
     m_frameCounter++;
@@ -397,7 +408,8 @@ void GameWindow::updateGame() {
 QList<tile*> GameWindow::createTiles(int startX, int y, int count,
                                       int tileWidth, bool createEnemy,
                                       int overlap, const QList<int>& spikeIndices,
-                                      const QList<int>& pressureIndices) {
+                                      const QList<int>& pressureIndices,
+                                      const QList<int>& gateIndices) {
     QList<tile*> tileList;
 
     for (int i = 0; i < count; i++) {
@@ -416,6 +428,11 @@ QList<tile*> GameWindow::createTiles(int startX, int y, int count,
             Spikes* spike = new Spikes(QPointF(x, y - Spikes::FRAME_HEIGHT + Spikes::SPIKE_SINK_OFFSET_Y));
             spike->setOffset(0, 6);
             m_spikes.append(spike);
+        }
+
+        if (gateIndices.contains(i)) {
+            Gate* gate = new Gate(QPointF(x, y - 80 + Gate::SINK_OFFSET));
+            m_gates.append(gate);
         }
     }
 

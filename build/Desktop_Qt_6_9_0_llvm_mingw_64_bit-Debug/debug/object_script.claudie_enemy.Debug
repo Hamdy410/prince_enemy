@@ -1,6 +1,7 @@
 debug/animation.o
 debug/enemy.o
 debug/gamewindow.o
+debug/gate.o
 debug/health.o
 debug/level1window.o
 debug/main.o

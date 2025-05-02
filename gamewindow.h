@@ -16,6 +16,7 @@
 #include "tile.h"
 #include "player.h"
 #include "spikes.h"
+#include "gate.h"
 
 class GameWindow : public QMainWindow
 {
@@ -35,9 +36,12 @@ protected:
     QList<tile*> createTiles(int startX, int y, int count, int tileWidth = 60,
                             bool createEnemy = false, int overlap=10,
                             const QList<int>& spikeIndices = QList<int>(),
-                            const QList<int>& pressureIndices = QList<int>());
+                            const QList<int>& pressureIndices = QList<int>(),
+                            const QList<int>& gateIndices = QList<int>());
     QList<tile*> m_tiles;
     QList<Spikes*> m_spikes;
+    QList<Gate*> m_gates;
+    QMap<int, int> m_tileToGateMap;
 
 private slots:
     void updateGame();

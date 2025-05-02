@@ -12,6 +12,7 @@ SOURCES += \
     animation.cpp \
     enemy.cpp \
     gamewindow.cpp \
+    gate.cpp \
     health.cpp \
     level1window.cpp \
     main.cpp \
@@ -27,6 +28,7 @@ HEADERS += \
     animation.h \
     enemy.h \
     gamewindow.h \
+    gate.h \
     health.h \
     level1window.h \
     mainwindow.h \
