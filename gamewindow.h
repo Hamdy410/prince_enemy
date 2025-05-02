@@ -42,6 +42,7 @@ protected:
     QList<Spikes*> m_spikes;
     QList<Gate*> m_gates;
     QMap<int, int> m_tileToGateMap;
+    void connectPressureTileToGate(int pressureTileIndex, int gateIndex);
 
 private slots:
     void updateGame();

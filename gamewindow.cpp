@@ -28,6 +28,9 @@ GameWindow::~GameWindow() {
 }
 
 void GameWindow::initializeGame() {
+    for (Gate* gate : m_gates) delete gate;
+    m_gates.clear();
+
     for (Enemy* enemy : m_enemies) {
         delete enemy;
     }
@@ -440,6 +443,9 @@ QList<tile*> GameWindow::createTiles(int startX, int y, int count,
 }
 
 void GameWindow::createTiles() {
+    for (Gate* gate : m_gates) delete gate;
+    m_gates.clear();
+
     for (tile* t : m_tiles) {
         delete t;
     }
@@ -453,4 +459,15 @@ void GameWindow::createTiles() {
 
     QList<tile*> platform3 = createTiles(50, height() - 300, 5, 60, false, 28, QList<int>{2});
     m_tiles.append(platform3);
+}
+
+void GameWindow::connectPressureTileToGate(int pressureTileIndex, int gateIndex) {
+    if (pressureTileIndex >= 0 && pressureTileIndex < m_tiles.size() &&
+        gateIndex >= 0 && gateIndex < m_gates.size()) {
+        PressureTile* pt = dynamic_cast<PressureTile*>(m_tiles[pressureTileIndex]);
+        if (pt && m_gates[gateIndex]) {
+            pt->connectToGate(m_gates[gateIndex]);
+            qDebug() << "Connected pressure tile" << pressureTileIndex << "to gate" << gateIndex;
+        }
+    }
 }

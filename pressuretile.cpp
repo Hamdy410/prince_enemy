@@ -1,10 +1,12 @@
 #include "pressuretile.h"
+#include "gate.h"
 
 PressureTile::PressureTile(int x, int y, bool hasEnemy)
     : tile(x, y - 2, hasEnemy),
     m_pressed(false),
     m_normalY(y - 2),
-    m_pressedY(y)
+    m_pressedY(y),
+    m_connectedGate(nullptr)
 {
     setPos(x, m_normalY);
 }
@@ -15,6 +17,14 @@ void PressureTile::setPressed(bool pressed) {
 
     m_pressed = pressed;
     setPos(pos().x(), pressed ? m_pressedY : m_normalY);
+
+    if (m_connectedGate) {
+        if (pressed) {
+            m_connectedGate->Open();
+        } else {
+            m_connectedGate->Close();
+        }
+    }
 }
 
 QRectF PressureTile::activationRegion() const {

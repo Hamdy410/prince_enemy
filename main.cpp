@@ -7,7 +7,10 @@
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
+    qApp->processEvents(QEventLoop::AllEvents);
+
     Level1Window w;
     w.show();
+
     return a.exec();
 }
