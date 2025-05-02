@@ -7,6 +7,7 @@ release/main.o
 release/mainwindow.o
 release/obstacle.o
 release/player.o
+release/pressuretile.o
 release/score.o
 release/spikes.o
 release/tile.o

@@ -34,7 +34,8 @@ protected:
     virtual void createTiles();
     QList<tile*> createTiles(int startX, int y, int count, int tileWidth = 60,
                             bool createEnemy = false, int overlap=10,
-                            const QList<int>& spikeIndices = QList<int>());
+                            const QList<int>& spikeIndices = QList<int>(),
+                            const QList<int>& pressureIndices = QList<int>());
     QList<tile*> m_tiles;
     QList<Spikes*> m_spikes;
 

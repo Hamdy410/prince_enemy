@@ -47,6 +47,7 @@ public:
     void takeDamage(int amount);
     QRectF hurtRegion() const;
     QRectF hitRegion() const;
+    QRectF feetRegion() const;
     bool isAttacking() const { return attackInProgress; }
     QSet<Enemy*>& enemiesHitThisAttack() { return m_enemiesHitThisAttack; }
 

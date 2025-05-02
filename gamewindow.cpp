@@ -2,6 +2,7 @@
 #include "player.h"
 #include "health.h"
 #include "spikes.h"
+#include "pressuretile.h"
 
 #include <QPainter>
 #include <QKeyEvent>
@@ -395,17 +396,23 @@ void GameWindow::updateGame() {
 
 QList<tile*> GameWindow::createTiles(int startX, int y, int count,
                                       int tileWidth, bool createEnemy,
-                                      int overlap, const QList<int>& spikeIndices) {
+                                      int overlap, const QList<int>& spikeIndices,
+                                      const QList<int>& pressureIndices) {
     QList<tile*> tileList;
 
     for (int i = 0; i < count; i++) {
         bool tileHasEnemy = createEnemy && (i == 0);
         int x = startX + i * (tileWidth - overlap);
-        tile* newTile = new tile(x, y, tileHasEnemy);
+
+        tile* newTile = nullptr;
+        if (pressureIndices.contains(i)) {
+            newTile = new PressureTile(x, y, tileHasEnemy);
+        } else {
+            newTile = new tile(x, y, tileHasEnemy);
+        }
         tileList.append(newTile);
 
         if (spikeIndices.contains(i)) {
-            // Place spike on top of the tile
             Spikes* spike = new Spikes(QPointF(x, y - Spikes::FRAME_HEIGHT + Spikes::SPIKE_SINK_OFFSET_Y));
             spike->setOffset(0, 6);
             m_spikes.append(spike);

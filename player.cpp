@@ -2,6 +2,7 @@
 #include "tile.h"
 #include "health.h"
 #include "score.h"
+#include "pressuretile.h"
 
 #include <QTransform>
 #include <QPainter>
@@ -482,6 +483,14 @@ void player::draw(QPainter* painter) {
     //     painter->drawRect(hit);
     //     painter->restore();
     // }
+
+    QRectF feet = feetRegion();
+    if (!feet.isNull()) {
+        painter->save();
+        painter->setPen(QPen(Qt::magenta, 1 , Qt::DashLine));
+        painter->drawRect(feet);
+        painter->restore();
+    }
 }
 
 QRectF player::boundingRect() const {
@@ -504,12 +513,12 @@ void player::setGround(qreal groundY) {
     groundy = groundY;
 }
 
-void player::checkCollisions(const QList<tile *> &tiles) {
+void player::checkCollisions(const QList<tile*> &tiles) {
     m_justLanded = false;
     QRectF playerBox = boundingRect().translated(m_x, m_y + sinkOffset);
 
     // 1. Check for landing on top of a tile
-    for (const tile* t: tiles) {
+    for (tile* t: tiles) {
         QRectF tileBox = t->boundingRect().translated(t->pos().x(), t->pos().y());
         float overlapLeft = playerBox.right() - tileBox.left();
         float overlapRight = tileBox.right() - playerBox.left();
@@ -533,6 +542,11 @@ void player::checkCollisions(const QList<tile *> &tiles) {
                 if (fallDistance > FALL_DAMAGE_THRESHOLD) {
                     takeDamage(1);
                     qDebug() << "Fall Damage! Distance:" << fallDistance;
+                }
+
+                PressureTile *pt = dynamic_cast<PressureTile*>(t);
+                if (pt && feetRegion().intersects(tileBox)) {
+                    pt->setPressed(!pt->isPressed());
                 }
 
                 break;
@@ -591,4 +605,21 @@ QRectF player::hitRegion() const {
     }
 
     return QRectF();
+}
+
+QRectF player::feetRegion() const {
+    QRectF box = boundingRect();
+    const qreal feetHeight = 9;
+    const qreal widthFraction = 0.2;
+    const qreal feetWidth = box.width() * widthFraction;
+
+    const qreal xOffset = m_x + (box.width() - feetWidth) / 2;
+
+    const qreal yOffset = m_y + box.height() - feetHeight + 4;
+
+    return QRectF(
+        xOffset,
+        yOffset,
+        feetWidth,
+        feetHeight);
 }

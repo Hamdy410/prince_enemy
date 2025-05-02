@@ -21,3 +21,7 @@ tile::tile(int x, int y, bool hasEnemy)
     groundy = y;
     boundingrect = boundingRect();
 }
+
+void tile::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
+    QGraphicsPixmapItem::paint(painter, option, widget);
+}
