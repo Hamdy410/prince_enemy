@@ -42,6 +42,9 @@ protected:
     QList<Spikes*> m_spikes;
     QList<Gate*> m_gates;
     QMap<int, int> m_tileToGateMap;
+
+    player *m_player;
+
     void connectPressureTileToGate(int pressureTileIndex, int gateIndex);
 
 private slots:
@@ -52,7 +55,6 @@ private:
     void drawDebugInfo(QPainter *painter);
     QString stateToString(Enemy::State state) const;
 
-    player *m_player;
     QList<Enemy*> m_enemies;
 
     QTimer m_gameTimer;

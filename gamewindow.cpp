@@ -8,7 +8,7 @@
 #include <QKeyEvent>
 #include <QDebug>
 
-GameWindow::GameWindow(QWidget *parent) : QMainWindow(parent), m_debugMode(true),
+GameWindow::GameWindow(QWidget *parent) : QMainWindow(parent), m_debugMode(false),
     m_frameCounter(0), m_fps(0)
 {
     setWindowTitle("Enemy Game");
