@@ -366,6 +366,16 @@ QString GameWindow::stateToString(Enemy::State state) const {
 }
 
 void GameWindow::updateGame() {
+    // Check if player is out of bounds
+    if (m_player->pos().y() > height() ||
+        m_player->pos().x() < -50 ||
+        m_player->pos().x() > width() + 50) {
+        m_gameOver = true;
+        m_gameTimer.stop();
+        update();
+        return;
+    }
+
     // Check for player health
     if (m_player->isDead() && !m_gameOver) {
         m_gameOver = true;
