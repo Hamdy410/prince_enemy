@@ -484,13 +484,13 @@ void player::draw(QPainter* painter) {
     //     painter->restore();
     // }
 
-    QRectF feet = feetRegion();
-    if (!feet.isNull()) {
-        painter->save();
-        painter->setPen(QPen(Qt::magenta, 1 , Qt::DashLine));
-        painter->drawRect(feet);
-        painter->restore();
-    }
+    // QRectF feet = feetRegion();
+    // if (!feet.isNull()) {
+    //     painter->save();
+    //     painter->setPen(QPen(Qt::magenta, 1 , Qt::DashLine));
+    //     painter->drawRect(feet);
+    //     painter->restore();
+    // }
 }
 
 QRectF player::boundingRect() const {
