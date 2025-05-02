@@ -34,7 +34,6 @@ void Gate::loadAnimationFrames()
     QPixmap spritesheet(":/images/gate.png");
 
     if (spritesheet.isNull()) {
-        qWarning() << "Gate: Failed to load spritesheet";
         return;
     }
 
@@ -50,13 +49,13 @@ void Gate::loadAnimationFrames()
         m_frames.push_back(frame);
     }
 
-    qDebug() << "Gate: Loaded" << m_frames.size() << "animation frames";
+
 }
 
 void Gate::Open()
 {
     if (!m_isOpen && !m_isAnimating) {
-        qDebug() << "Gate: Opening";
+
         m_isAnimating = true;
         m_isOpening = true;
         m_animationTimer.start(FRAME_DURATION);
@@ -66,7 +65,7 @@ void Gate::Open()
 void Gate::Close()
 {
     if (m_isOpen && !m_isAnimating) {
-        qDebug() << "Gate: Closing";
+
         m_isAnimating = true;
         m_isOpening = false;
         m_animationTimer.start(FRAME_DURATION);
@@ -83,7 +82,6 @@ void Gate::updateAnimation()
             m_animationTimer.stop();
             m_isAnimating = false;
             m_isOpen = true;
-            qDebug() << "Gate: Fully opened";
         }
     } else {
         // Closing animation
@@ -93,7 +91,6 @@ void Gate::updateAnimation()
             m_animationTimer.stop();
             m_isAnimating = false;
             m_isOpen = false;
-            qDebug() << "Gate: Fully closed";
         }
     }
 

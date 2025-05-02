@@ -1,5 +1,6 @@
 debug/animation.o
 debug/enemy.o
+debug/exit.o
 debug/gamewindow.o
 debug/gate.o
 debug/health.o

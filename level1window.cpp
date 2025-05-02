@@ -17,7 +17,20 @@ void Level1Window::createTiles() {
     for (tile* t : m_tiles) delete t;
     m_tiles.clear();
 
-    createRoom3();
+    switch (m_currentRoom) {
+    case ROOM_ONE:
+        createRoom1();
+        break;
+    case ROOM_TWO:
+        createRoom2();
+        break;
+    case ROOM_THREE:
+        createRoom3();
+        break;
+    case ROOM_FOUR:
+        createRoom4();
+        break;
+    }
 }
 
 void Level1Window::createRoom1() {

@@ -477,7 +477,6 @@ void GameWindow::connectPressureTileToGate(int pressureTileIndex, int gateIndex)
         PressureTile* pt = dynamic_cast<PressureTile*>(m_tiles[pressureTileIndex]);
         if (pt && m_gates[gateIndex]) {
             pt->connectToGate(m_gates[gateIndex]);
-            qDebug() << "Connected pressure tile" << pressureTileIndex << "to gate" << gateIndex;
         }
     }
 }

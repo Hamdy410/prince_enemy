@@ -93,10 +93,6 @@ player::player(bool right, QObject* parent)
     }
     animationFrames << unarmRight << unarmLeft;
 
-    qDebug() << "Animation Frames size:" << animationFrames.size();
-    for (int i = 0; i < animationFrames.size(); i++)
-        qDebug() << "animationFrames[" << i << "].size():" << animationFrames[i].size();
-
     groundy = m_y;
 }
 
@@ -541,7 +537,6 @@ void player::checkCollisions(const QList<tile*> &tiles) {
 
                 if (fallDistance > FALL_DAMAGE_THRESHOLD) {
                     takeDamage(1);
-                    qDebug() << "Fall Damage! Distance:" << fallDistance;
                 }
 
                 PressureTile *pt = dynamic_cast<PressureTile*>(t);
@@ -584,7 +579,6 @@ void player::takeDamage(int amount) {
     m_health -= amount;
     if (m_health < 0) m_health = 0;
     m_healthBar->decrease(amount);
-    qDebug() << "Player hit! Health is now:" << m_health;
 }
 
 QRectF player::hurtRegion() const {

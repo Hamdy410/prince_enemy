@@ -11,6 +11,7 @@ DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs depr
 SOURCES += \
     animation.cpp \
     enemy.cpp \
+    exit.cpp \
     gamewindow.cpp \
     gate.cpp \
     health.cpp \
@@ -27,6 +28,7 @@ SOURCES += \
 HEADERS += \
     animation.h \
     enemy.h \
+    exit.h \
     gamewindow.h \
     gate.h \
     health.h \
@@ -53,3 +55,4 @@ RESOURCES += \
 CONFIG(release, debug|release): DEFINES += QT_NO_DEBUG_OUTPUT
 CONFIG(release, debug|release): DEFINES += QT_NO_INFO_OUTPUT
 CONFIG(release, debug|release): DEFINES += QT_NO_WARNING_OUTPUT
+

@@ -1,5 +1,6 @@
 release/animation.o
 release/enemy.o
+release/exit.o
 release/gamewindow.o
 release/gate.o
 release/health.o

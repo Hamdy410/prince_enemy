@@ -35,7 +35,6 @@ Enemy::~Enemy() {
 bool Enemy::initialize(const QString& spritesheet, int frameWidth, int frameHeight) {
     // Load the spritesheet
     if (!m_animation->loadSpritesheet(spritesheet, frameWidth, frameHeight)) {
-        qWarning() << "Failed to load spritesheet:" << spritesheet;
         return false;
     }
 
@@ -74,7 +73,6 @@ bool Enemy::setState(State state) {
 
     // Rule 1: If the enemy is dead, only allow resurrection by external code
     if (!m_alive && state != DIERIGHT && state != DIELEFT) {
-        qDebug() << "Cannot change dead enemy state - enemy is not alive";
         return false;
     }
 
@@ -364,7 +362,6 @@ void Enemy::takeDamage(int amount) {
         emit died();
     }
 
-    qDebug() << "Enemy hit! Health is now:" << m_health;
 }
 
 QRectF Enemy::hurtRegion() const {

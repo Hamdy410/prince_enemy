@@ -16,7 +16,6 @@ Spikes::Spikes(const QPointF& pos)
     connect(&m_animationtimer, &QTimer::timeout, this, &Spikes::advanceAnimation);
     loadSpriteSheet();
     setPos(pos);
-    qDebug() << "Spikes created at" << pos << "with activation distance" << m_activationDistance;
 
     setHitRegion(25, 25, 25, 30);
 }
@@ -25,7 +24,6 @@ Spikes::Spikes(const QPointF& pos)
 void Spikes::loadSpriteSheet()
 { QPixmap spriteSheet(":/images/spikes.png");
     if (spriteSheet.isNull()) {
-        qWarning("Failed to load spikes sprite sheet");
         return;
     }
     m_spritesheet = spriteSheet;
@@ -40,7 +38,6 @@ void Spikes::changeState(State newstate)
     if(m_currentstate == newstate)
         return;
     if(m_spritesheet.isNull()){
-        qWarning("sprite not loaded");
         return;
     }
     m_currentstate =  newstate;
@@ -48,7 +45,6 @@ void Spikes::changeState(State newstate)
 
     if(frameX + FRAME_WIDTH > m_spritesheet.width())
     {
-        qWarning("Frame out of spritesheet bounds");
         return;
     }
     QPixmap frame= m_spritesheet.copy(frameX, 0, FRAME_WIDTH,FRAME_HEIGHT);
@@ -58,7 +54,6 @@ void Spikes::changeState(State newstate)
     switch(m_currentstate)
     {
     case Hidden:
-        qDebug() << "Spike is now hidden";
         setVisible(true);
         m_solid = false;
         m_damaging= false;
@@ -70,7 +65,6 @@ void Spikes::changeState(State newstate)
         m_damaging= false;
         break;
     case Fullyout:
-        qDebug() << "Spike is now fully extended";
         setVisible(true);
         m_solid = true;
         m_damaging= true;
@@ -122,7 +116,6 @@ void Spikes::onCollide(player* player)
         return;
 
     if (player->hurtRegion().intersects(hitRegion())) {
-        qWarning("The player is killed");
         player->takeDamage(100);
     }
 }

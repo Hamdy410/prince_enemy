@@ -16,16 +16,11 @@ bool Animation::loadSpritesheet(const QString &filename, int frameWidth, int fra
     m_spritesheet = QPixmap(filename);
     if (m_spritesheet.isNull())
     {
-        qWarning() << "Failed to load sprite sheet: " << filename;
         return false;
     }
 
     m_frameWidth = frameWidth;
     m_frameHeight = frameHeight;
-
-    qDebug() << "Loaded spritehseet: " << filename
-             << "Size: " << m_spritesheet.size()
-             << "Frame dimensions: " << QSize(frameWidth, frameHeight);
 
     return true;
 }
@@ -43,14 +38,6 @@ void Animation::addState(const QString &name, int rowIndex, int frameCount, bool
 
     m_states[name] = state;
 
-    qDebug() << "Added animation state: " << name
-             << "Row: " << rowIndex
-             << "Frames: " << frameCount
-             << "Looping: " << looping
-             << "Movable: " << movable
-             << "Direction: " << direction
-             << "Flip: " << state.flipHorizontally;
-
     if (m_currentStateName.isEmpty())
         setState(name);
 }
@@ -61,16 +48,11 @@ QStringList Animation::availableStates() const {
 
 // Add to Animation.cpp - setState method
 bool Animation::setState(const QString& stateName) {
-    qDebug() << "Animation::setState called with:" << stateName;
 
     if (!m_states.contains(stateName)) {
-        qWarning() << "Animation state not found:" << stateName;
-        qDebug() << "Available states:" << m_states.keys();
         return false;
     }
 
-    qDebug() << "Found state" << stateName << "with row" << m_states[stateName].rowIndex
-             << "and" << m_states[stateName].frameCount << "frames";
 
     if (m_currentStateName != stateName) {
         m_currentStateName = stateName;
@@ -79,7 +61,6 @@ bool Animation::setState(const QString& stateName) {
         emit stateChanged(stateName);
         emit frameChanged(m_currentFrame);
 
-        qDebug() << "Changed to state:" << stateName;
     }
 
     return true;
@@ -147,9 +128,6 @@ QPoint Animation::getFramePosition(int stateRow, int frameIndex) const {
     int x = frameIndex * m_frameWidth;
     int y = stateRow * m_frameHeight;
 
-    qDebug() << "Getting frame position for row " << stateRow
-             << "frame" << frameIndex << "position:" << QPoint(x, y);
-
     return QPoint(x, y);
 }
 
@@ -171,10 +149,6 @@ void Animation::updateFrame() {
             m_completed = true;
             m_timer.stop();
 
-            // Add this explicit debug message
-            qDebug() << "Animation completed:" << m_currentStateName
-                     << "at frame" << m_currentFrame;
-
             emit animationCompleted(m_currentStateName);
             return;
         }
@@ -192,8 +166,6 @@ QPixmap Animation::currentFrame() const {
 
     const AnimationState& state = m_states[m_currentStateName];
     if (m_currentFrame < 0 || m_currentFrame >= state.frameCount) {
-        qWarning() << "Invalid frame index:" << m_currentFrame
-                   << "for state:" << m_currentStateName;
         return QPixmap();
     }
 
@@ -211,7 +183,6 @@ QPixmap Animation::currentFrame() const {
 
 void Animation::setStateDirection(const QString &stateName, int direction) {
     if (!m_states.contains(stateName)) {
-        qWarning() << "Cannot set direction: Animation state not found:" << stateName;
         return;
     }
 
@@ -219,9 +190,6 @@ void Animation::setStateDirection(const QString &stateName, int direction) {
     m_states[stateName].direction = direction;
     // Update flip based on direction
     m_states[stateName].flipHorizontally = (direction < 0);
-
-    qDebug() << "Set state" << stateName << "direction to" << direction
-             << "flip:" << m_states[stateName].flipHorizontally;
 
     if (m_currentStateName == stateName) {
         emit stateChanged(stateName);
@@ -232,7 +200,6 @@ void Animation::setStateDirection(const QString &stateName, int direction) {
 
 bool Animation::getStateFlip(const QString &stateName) const {
     if (!m_states.contains(stateName)) {
-        qWarning() << "Cannot get flip state: Animation state not found: " << stateName;
         return false;
     }
 
@@ -241,17 +208,10 @@ bool Animation::getStateFlip(const QString &stateName) const {
 
 // Implement in Animation.cpp
 void Animation::dumpStateInfo() const {
-    qDebug() << "=== ANIMATION STATES ===";
     for (auto it = m_states.begin(); it != m_states.end(); ++it) {
         const QString& name = it.key();
         const AnimationState& state = it.value();
-        qDebug() << "State:" << name
-                 << "Row:" << state.rowIndex
-                 << "Frames:" << state.frameCount
-                 << "Direction:" << state.direction;
     }
-    qDebug() << "Current state:" << m_currentStateName;
-    qDebug() << "=======================";
 }
 
 int Animation::frameCount() const {
