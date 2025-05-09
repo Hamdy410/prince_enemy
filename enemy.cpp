@@ -340,7 +340,7 @@ bool Enemy::checkForEdge() {
     bool foundGround = false;
 
     for (QGraphicsItem* item : m_tiles) {
-        QRectF tileRect = item->sceneBoundingRect();
+        QRectF tileRect = item->boundingRect();
 
         if (checkX >= tileRect.left() && checkX <= tileRect.right()) {
             if (qAbs(checkY - tileRect.top()) < 10) {

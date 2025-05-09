@@ -76,7 +76,6 @@ signals:
     void frameChanged(int frameIndex);
     void stateChanged(const QString& stateName);
     void animationCompleted(const QString& stateName);
-
 private slots:
     void updateFrame();
 

@@ -20,6 +20,7 @@ SOURCES += \
     mainwindow.cpp \
     obstacle.cpp \
     player.cpp \
+    player_animation.cpp \
     pressuretile.cpp \
     score.cpp \
     spikes.cpp \
@@ -36,6 +37,7 @@ HEADERS += \
     mainwindow.h \
     obstacle.h \
     player.h \
+    player_animation.h \
     pressuretile.h \
     score.h \
     spikes.h \
