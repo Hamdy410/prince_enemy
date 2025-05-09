@@ -12,7 +12,7 @@
 
 player::player(bool right, QObject* parent)
     : QObject(parent),
-    m_health(3),
+    m_health(15),
     statue(right ? StillRight : StillLeft),
     m_x(100), m_y(100), groundy(100),
     frame(0), isClimb(false),
