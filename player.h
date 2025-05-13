@@ -16,9 +16,12 @@ class Enemy;
 
 enum movement {
     StillRight, StillLeft, WalkRight, WalkLeft,
-    JumpRight, JumpLeft, HopRight, HopLeft, AttackLeft,
-    AttackRight
+    JumpRight, JumpLeft, HopRight, HopLeft,
+    ArmRight, ArmLeft, UnarmRight, UnarmLeft,  // Restore arming states
+    SwordIdleRight, SwordIdleLeft,  // Restore sword idle states
+    AttackLeft, AttackRight
 };
+
 
 class player : public QObject {
     Q_OBJECT
@@ -103,6 +106,11 @@ private:
 
     int jumpBufferFrames = 0;
     const int JUMP_BUFFER_MAX = 4;
+
+    // Attack Animation Parameters
+    bool swordOut = false;
+    bool armingInProgress = false;
+    bool unarmingInProgress = false;
 };
 
 #endif
