@@ -81,17 +81,6 @@ player::player(bool right, QObject* parent)
     }
     animationFrames << attackRight << attackLeft;
 
-    // Restore unarming animations
-    QList<QPixmap> unarmRight, unarmLeft;
-    x = 0;
-    for (int i = 0; i < 9; i++) {
-        QPixmap f = SpriteSheet.copy(x, 3 * height, width, height);
-        unarmRight << f;
-        unarmLeft << f.transformed(transform);
-        x += width;
-    }
-    animationFrames << unarmRight << unarmLeft;
-
     groundy = m_y;
 }
 
@@ -144,27 +133,6 @@ void player::handleKeyPress(QKeyEvent* event) {
     }else if (event->key() == Qt::Key_Z) {
         if (!attackInProgress && !isJumping && !isHopping) {
             statue = (statue == StillLeft) ? AttackLeft : AttackRight;
-            frame = 0;
-            attackInProgress = true;
-            m_enemiesHitThisAttack.clear();
-        }
-    }else if (event->key() == Qt::Key_R) {  // Arm weapon
-        if (!swordOut && !armingInProgress && !attackInProgress && !unarmingInProgress) {
-            statue = (statue == StillLeft || statue == WalkLeft) ? ArmLeft : ArmRight;
-            frame = 0;
-            armingInProgress = true;
-        }
-    }
-    else if (event->key() == Qt::Key_L) {  // Unarm weapon
-        if (swordOut && !armingInProgress && !attackInProgress && !unarmingInProgress) {
-            statue = (statue == StillLeft || statue == WalkLeft || statue == SwordIdleLeft) ? UnarmLeft : UnarmRight;
-            frame = 0;
-            unarmingInProgress = true;
-        }
-    }
-    else if (event->key() == Qt::Key_A) {  // Attack
-        if (swordOut && !attackInProgress && !armingInProgress && !unarmingInProgress) {
-            statue = (statue == StillLeft || statue == SwordIdleLeft) ? AttackLeft : AttackRight;
             frame = 0;
             attackInProgress = true;
             m_enemiesHitThisAttack.clear();
@@ -285,43 +253,11 @@ void player::update(const QList<tile*>& tiles, const QList<Gate*>& gates) {
             if (frame >= animationFrames[8 + (statue == AttackLeft ? 1 : 0)].size()) {
                 attackInProgress = false;
                 m_enemiesHitThisAttack.clear();
-                statue = (statue == AttackLeft) ? SwordIdleLeft : SwordIdleRight;
+                statue = (statue == AttackLeft || statue == StillLeft || statue == WalkLeft) ? StillLeft : StillRight;
                 frame = 0;
             }
             m_animCounter = 0;
         }
-        break;
-    case ArmRight:
-    case ArmLeft:
-        m_animCounter++;
-        if (m_animCounter >= m_animDelay) {
-            frame++;
-            if (frame >= animationFrames[6 + (statue == ArmLeft ? 1 : 0)].size()) {
-                swordOut = true;
-                armingInProgress = false;
-                statue = (statue == ArmLeft) ? SwordIdleLeft : SwordIdleRight;
-                frame = 0;
-            }
-            m_animCounter = 0;
-        }
-        break;
-    case UnarmRight:
-    case UnarmLeft:
-        m_animCounter++;
-        if (m_animCounter >= m_animDelay) {
-            frame++;
-            if (frame >= animationFrames[10 + (statue == UnarmLeft ? 1 : 0)].size()) {
-                swordOut = false;
-                unarmingInProgress = false;
-                statue = (statue == UnarmLeft) ? StillLeft : StillRight;
-                frame = 0;
-            }
-            m_animCounter = 0;
-        }
-        break;
-    case SwordIdleRight:
-    case SwordIdleLeft:
-        frame = 0;
         break;
     }
 
@@ -401,35 +337,12 @@ void player::draw(QPainter* painter) {
     case StillLeft:
         framePixmap = currentImageLeft;
         break;
-    case SwordIdleRight:
-        framePixmap = animationFrames[6][animationFrames[6].size() - 1]; // Last frame of ArmRight
-        break;
-    case SwordIdleLeft:
-        framePixmap = animationFrames[7][animationFrames[7].size() - 1]; // Last frame of ArmLeft
-        break;
-
-        // Attack Animations
     case AttackRight:
         framePixmap = animationFrames[8][qMin(frame, animationFrames[8].size() - 1)];
         break;
     case AttackLeft:
         framePixmap = animationFrames[9][qMin(frame, animationFrames[9].size() - 1)];
         break;
-
-        // Arming/Unarming
-    case ArmRight:
-        framePixmap = animationFrames[6][qMin(frame, animationFrames[6].size() - 1)];
-        break;
-    case ArmLeft:
-        framePixmap = animationFrames[7][qMin(frame, animationFrames[7].size() - 1)];
-        break;
-    case UnarmRight:
-        framePixmap = animationFrames[10][qMin(frame, animationFrames[10].size() - 1)];
-        break;
-    case UnarmLeft:
-        framePixmap = animationFrames[11][qMin(frame, animationFrames[11].size() - 1)];
-        break;
-
     default:
         framePixmap = currentImageRight;
         break;
