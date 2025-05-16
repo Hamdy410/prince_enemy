@@ -403,7 +403,7 @@ void player::draw(QPainter* painter) {
 
     painter->drawPixmap(QPointF(m_x, m_y + sinkOffset), framePixmap);
 
-     //Debug: Draw bounding box and foot region
+    // Debug: Draw bounding box and foot region
     //QRectF box = boundingRect();
     //painter->setPen(Qt::red);
     //painter->drawRect(box.translated(m_x, m_y));
@@ -416,7 +416,12 @@ void player::draw(QPainter* painter) {
     //painter->drawRect(hurtRegion());
     //painter->restore();
 
-     //QRectF hit = hitRegion();
+    QRectF hurt = hurtRegion();
+    painter->setPen(Qt::red);
+    painter->drawRect(hurt);
+    painter->restore();
+
+    // QRectF hit = hitRegion();
     // if (!hit.isNull()) {
     //     painter->save();
     //     painter->setPen(QPen(Qt::green, 2));
@@ -434,7 +439,7 @@ void player::draw(QPainter* painter) {
      //}
 }
 
-QRectF player::boundingRect() {
+QRectF player::boundingRect() const {
     if(isCrouching){
         QPixmap framePixmap = animationFrames[10][0];
         if (!animationFrames.isEmpty() && !animationFrames[0].isEmpty())
@@ -516,17 +521,17 @@ void player::takeDamage(int amount) {
     m_healthBar->decrease(amount);
 }
 
-QRectF player::hurtRegion(){
+QRectF player::hurtRegion() const {
     QRectF playerBox = boundingRect().translated(m_x, m_y + sinkOffset);
     qreal centerX = playerBox.left() + playerBox.width() / 2.0;
     qreal hurtX = centerX - HURT_REGION_WIDTH / 2.0;
     if(!isCrouching)
-    return QRectF(hurtX, playerBox.top()+10, HURT_REGION_WIDTH, playerBox.height()-10);
+    return QRectF(hurtX, playerBox.top()+25, HURT_REGION_WIDTH, playerBox.height()-25);
     else
     return QRectF(hurtX, playerBox.top()+15, HURT_REGION_WIDTH, playerBox.height()-15);
 }
 
-QRectF player::hitRegion(){
+QRectF player::hitRegion() const {
     QRectF playerBox = boundingRect().translated(m_x, m_y + sinkOffset);
     int swordLength = 20;
     if (statue == AttackRight) {
@@ -539,7 +544,7 @@ QRectF player::hitRegion(){
     return QRectF();
 }
 
-QRectF player::feetRegion() {
+QRectF player::feetRegion() const {
     if(isCrouching){
         QRectF box = player::boundingRect();
         const qreal feetHeight = 9;

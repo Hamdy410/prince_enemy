@@ -11,6 +11,7 @@
 #include "score.h"
 #include "health.h"
 #include "gate.h"
+
 class tile;
 class Enemy;
 
@@ -30,7 +31,7 @@ public:
     void handleKeyRelease(QKeyEvent* event);
     void update(const QList<tile*>& tiles, const QList<Gate*>& gates);
     void draw(QPainter* painter);
-    QRectF boundingRect();
+    QRectF boundingRect() const;
     QPointF pos() const;
     void setPos(qreal x, qreal y);
     // int Score() const { return m_score.value; }
@@ -42,10 +43,9 @@ public:
 
     // Attack methods
     void takeDamage(int amount);
-    QRectF hurtRegion();
-    bool isCrouching;
-    QRectF hitRegion();
-    QRectF feetRegion();
+    QRectF hurtRegion() const;
+    QRectF hitRegion() const;
+    QRectF feetRegion() const;
     bool isAttacking(){ return is_attacking; }
     QSet<Enemy*>& enemiesHitThisAttack() { return m_enemiesHitThisAttack; }
 
@@ -74,9 +74,12 @@ private:
     QPixmap currentImageLeft;
     QList<QList<QPixmap>> animationFrames;
     void fall(const QList<tile*>& tiles, const QList<Gate*>& gates);
+    bool isCrouching;
+
     // Animation helpers
     int m_animCounter = 0;
     int m_animDelay = 8;
+
     // Attack Animation Parameters
     bool is_attacking = false;
     static constexpr int HURT_REGION_WIDTH = 27;
