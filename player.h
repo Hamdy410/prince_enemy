@@ -17,7 +17,7 @@ class Enemy;
 enum movement {
     StillRight, StillLeft, WalkRight, WalkLeft,
     JumpRight, JumpLeft, HopRight, HopLeft, AttackLeft,
-    AttackRight
+    AttackRight,crouchRight,crouchLeft
 };
 
 class player : public QObject {
@@ -30,7 +30,7 @@ public:
     void handleKeyRelease(QKeyEvent* event);
     void update(const QList<tile*>& tiles, const QList<Gate*>& gates);
     void draw(QPainter* painter);
-    QRectF boundingRect() const;
+    QRectF boundingRect();
     QPointF pos() const;
     void setPos(qreal x, qreal y);
     // int Score() const { return m_score.value; }
@@ -42,10 +42,11 @@ public:
 
     // Attack methods
     void takeDamage(int amount);
-    QRectF hurtRegion() const;
-    QRectF hitRegion() const;
-    QRectF feetRegion() const;
-    bool isAttacking() const { return attackInProgress; }
+    QRectF hurtRegion();
+    bool isCrouching;
+    QRectF hitRegion();
+    QRectF feetRegion();
+    bool isAttacking(){ return is_attacking; }
     QSet<Enemy*>& enemiesHitThisAttack() { return m_enemiesHitThisAttack; }
 
     // Health and Score representations:
@@ -66,26 +67,18 @@ private:
     qreal groundy;
     int frame;
     int isHopping;
+    bool RightFacingDirection;
     int isJumping;
+    bool isFalling;
     QPixmap currentImageRight;
     QPixmap currentImageLeft;
     QList<QList<QPixmap>> animationFrames;
-
+    void fall(const QList<tile*>& tiles, const QList<Gate*>& gates);
     // Animation helpers
     int m_animCounter = 0;
     int m_animDelay = 8;
-
-    // Falling/jumping physics
-    float m_velocityY = 0.0f;
-    bool m_inAir = false;
-    bool m_justLanded = false;
-
-    // Ledge grab helpers
-    int climbFrame = 0;
-    int hangFrame = 0;
-
     // Attack Animation Parameters
-    bool attackInProgress = false;
+    bool is_attacking = false;
     static constexpr int HURT_REGION_WIDTH = 27;
     QSet<Enemy*> m_enemiesHitThisAttack;
 
@@ -94,14 +87,11 @@ private:
     Score* m_scoreBar;
 
     // Fall Damage system
-    float m_fallStartY = 0.0f;
+    float falling_distance = 0.0f;
+    float damage_of_falling=0;
 
-    // Right and jump simultaneously
-    bool rightPressed = false;
-    bool leftPressed = false;
+    //jump simultaneously
     bool upPressed = false;
-
-    int jumpBufferFrames = 0;
     const int JUMP_BUFFER_MAX = 4;
 };
 
