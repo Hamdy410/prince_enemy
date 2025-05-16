@@ -124,18 +124,18 @@ void player::handleKeyPress(QKeyEvent* event) {
         }
     } else if (event->key() == Qt::Key_Up) {
         if(isHopping!=2 && !isCrouching && !is_attacking && !isFalling){
-                isFalling = false;
-                isJumping=2;
-                isHopping=0;
-                if(!RightFacingDirection && !is_attacking && !isCrouching){
-                    statue = JumpLeft;
-                    RightFacingDirection = false;
-                }else if(RightFacingDirection && !is_attacking && !isCrouching){
-                    statue = JumpRight;
-                    RightFacingDirection = true;
-                }
-                frame = 0;
-                m_animCounter = 0;
+            isFalling = false;
+            isJumping=2;
+            isHopping=0;
+            if(!RightFacingDirection && !is_attacking && !isCrouching){
+                statue = JumpLeft;
+                RightFacingDirection = false;
+            }else if(RightFacingDirection && !is_attacking && !isCrouching){
+                statue = JumpRight;
+                RightFacingDirection = true;
+            }
+            frame = 0;
+            m_animCounter = 0;
         }
     }else if (event->key() == Qt::Key_Z) {
         if (!is_attacking && !isJumping && !isHopping && !isCrouching) {
@@ -173,7 +173,7 @@ void player::handleKeyRelease(QKeyEvent* event) {
     } else if (event->key() == Qt::Key_Left) {
         if (isHopping != 2 && isJumping != 2  && !is_attacking && !isCrouching)
             statue = StillLeft;
-            RightFacingDirection = false;
+        RightFacingDirection = false;
     } else if (event->key() == Qt::Key_Space) {
         if (isHopping != 2 && isJumping != 2 && !is_attacking && !isCrouching) {
             isHopping = 0; isJumping = 0; frame = 0;
@@ -201,13 +201,8 @@ void player::fall(const QList<tile*>& tiles, const QList<Gate*>& gates){
         return ;
     if(!isFalling)
         return ;
-    if(RightFacingDirection)
-        m_x++;
-    else
-        m_x--;
-    int change = (m_y)/25 + 1; //change increases when the player goes down more
-    m_y+= change;
-    falling_distance+= change;
+    m_y+= 10;
+    falling_distance+= 10;
     const float FALL_DAMAGE_THRESHOLD = 200.0f;
     if (falling_distance > FALL_DAMAGE_THRESHOLD) {
         damage_of_falling++;
@@ -225,22 +220,22 @@ void player::update(const QList<tile*>& tiles, const QList<Gate*>& gates) {
         falling_distance=0;
     switch (statue) {
     case WalkRight:
-            m_x += 3;
-            m_animCounter++;
-            if (m_animCounter >= m_animDelay) {
-                frame++;
-                if (frame >= animationFrames[0].size()) frame = 0;
-                m_animCounter = 0;
-            }
+        m_x += 3;
+        m_animCounter++;
+        if (m_animCounter >= m_animDelay) {
+            frame++;
+            if (frame >= animationFrames[0].size()) frame = 0;
+            m_animCounter = 0;
+        }
         break;
     case WalkLeft:
-            m_x -= 3;
-            m_animCounter++;
-            if (m_animCounter >= m_animDelay) {
-                frame++;
-                if (frame >= animationFrames[1].size()) frame = 0;
-                m_animCounter = 0;
-            }
+        m_x -= 3;
+        m_animCounter++;
+        if (m_animCounter >= m_animDelay) {
+            frame++;
+            if (frame >= animationFrames[1].size()) frame = 0;
+            m_animCounter = 0;
+        }
         break;
     case StillRight:
         frame = 0;
@@ -302,13 +297,12 @@ void player::update(const QList<tile*>& tiles, const QList<Gate*>& gates) {
                 m_y-= (15-frame); //this equation makes the jumping slower each time the player rises
                 ++frame;
                 isJumping=2;
-                qDebug()<<frame<<"\n";
                 isFalling=false;
             }else {
                 if(statue==JumpRight)
-                statue = StillRight;
+                    statue = StillRight;
                 else
-                statue=StillLeft;
+                    statue=StillLeft;
                 isJumping=0;
                 isFalling=true;
                 isHopping = 0;
@@ -416,10 +410,10 @@ void player::draw(QPainter* painter) {
     //painter->drawRect(hurtRegion());
     //painter->restore();
 
-    QRectF hurt = hurtRegion();
-    painter->setPen(Qt::red);
-    painter->drawRect(hurt);
-    painter->restore();
+    //QRectF hurt = hurtRegion();
+    //painter->setPen(Qt::red);
+    //painter->drawRect(hurt);
+    //painter->restore();
 
     // QRectF hit = hitRegion();
     // if (!hit.isNull()) {
@@ -430,13 +424,13 @@ void player::draw(QPainter* painter) {
     //     painter->restore();
     // }
 
-     //QRectF feet = feetRegion();
-     //if (!feet.isNull()) {
-     //    painter->save();
-     //    painter->setPen(QPen(Qt::magenta, 1 , Qt::DashLine));
-     //    painter->drawRect(feet);
-     //    painter->restore();
-     //}
+    //QRectF feet = feetRegion();
+    //if (!feet.isNull()) {
+    //    painter->save();
+    //    painter->setPen(QPen(Qt::magenta, 1 , Qt::DashLine));
+    //    painter->drawRect(feet);
+    //    painter->restore();
+    //}
 }
 
 QRectF player::boundingRect() const {
@@ -449,7 +443,7 @@ QRectF player::boundingRect() const {
         QPixmap framePixmap = currentImageRight;
         if (!animationFrames.isEmpty() && !animationFrames[0].isEmpty())
             framePixmap = animationFrames[0][0];
-        return QRectF(15, 0, framePixmap.width()/2, framePixmap.height());
+        return QRectF(25, 0, framePixmap.width()/2-20, framePixmap.height());
     }
 }
 
@@ -526,9 +520,9 @@ QRectF player::hurtRegion() const {
     qreal centerX = playerBox.left() + playerBox.width() / 2.0;
     qreal hurtX = centerX - HURT_REGION_WIDTH / 2.0;
     if(!isCrouching)
-    return QRectF(hurtX, playerBox.top()+25, HURT_REGION_WIDTH, playerBox.height()-25);
+        return QRectF(hurtX+10, playerBox.top()+25, HURT_REGION_WIDTH-20, playerBox.height()-25);
     else
-    return QRectF(hurtX, playerBox.top()+15, HURT_REGION_WIDTH, playerBox.height()-15);
+        return QRectF(hurtX, playerBox.top()+15, HURT_REGION_WIDTH, playerBox.height()-15);
 }
 
 QRectF player::hitRegion() const {

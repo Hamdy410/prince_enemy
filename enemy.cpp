@@ -217,12 +217,12 @@ void Enemy::render(QPainter *painter) {
         // QRectF enemyRect(m_position, QSizeF(m_animation->frameWidth(), m_animation->frameHeight()));
         // Determine the hit region
 
-        QRectF hitRegion = calculateHitRegion();
-        painter->save();
-        painter->setPen(QPen(Qt::blue, 2));
-        painter->setBrush(QColor(0, 0, 255, 100));
-        painter->drawRect(hitRegion);
-        painter->restore();
+        //QRectF hitRegion = calculateHitRegion();
+        //painter->save();
+        //painter->setPen(QPen(Qt::blue, 2));
+        //painter->setBrush(QColor(0, 0, 255, 100));
+        //painter  ->drawRect(hitRegion);
+        //painter->restore();
 
         // painter->save();
         // painter->setPen(QPen(Qt::blue, 2));
@@ -360,7 +360,7 @@ QRectF Enemy::hurtRegion() const {
 }
 
 QRectF Enemy::calculateHitRegion() const {
-    QRectF enemyRect(m_position, QSize(m_animation->frameWidth(), m_animation->frameHeight()));
+    QRectF enemyRect(m_position, QSize(m_animation->frameWidth(), m_animation->frameHeight()-5));
     QRectF hitRegion = enemyRect;
 
     // Set horizontal dimensions based on facing direction
