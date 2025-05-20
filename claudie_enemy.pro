@@ -25,6 +25,7 @@ SOURCES += \
     pressuretile.cpp \
     score.cpp \
     spikes.cpp \
+    startpage.cpp \
     tile.cpp
 
 HEADERS += \
@@ -43,6 +44,7 @@ HEADERS += \
     pressuretile.h \
     score.h \
     spikes.h \
+    startpage.h \
     tile.h
 
 FORMS += \
