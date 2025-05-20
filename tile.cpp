@@ -11,16 +11,12 @@
 }
 */
 
-tile::tile(int x, int y, bool hasEnemy)
-    : QGraphicsRectItem(x,y,60,2)
+tile::tile(int x, int y, int width, int height, QString label, bool hasEnemy)
+    : Structure(x,y,width,height,label)
     , m_hasEnemy(hasEnemy) {
     //QPixmap SpriteSheet(":/images/EnvironSpriteOK.png");
     //setPixmap(SpriteSheet.copy(127, 685, 60, 18));
     setPos(x,y);
     groundy = y;
     boundingrect = boundingRect();
-}
-
-void tile::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
-    QGraphicsRectItem::paint(painter, option, widget);
 }

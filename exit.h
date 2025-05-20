@@ -1,23 +1,26 @@
-// #ifndef EXIT_H
-// #define EXIT_H
+#ifndef EXIT_H
+#define EXIT_H
 
-// #include "obstacle.h"
+#include <QWidget>
+#include <QGraphicsPixmapItem>
+#include "gate.h"
 
-// class Exit : public Obstacle
-// {
-//     Q_OBJECT
 
-// public:
-//     Exit(const QPointF& pos, int targetRoomId = -1, const QPointF& playerSpawnPoint = QPointF(0, 0));
-//     ~Exit();
+class Exit : public Gate
+{
+    Q_OBJECT
 
-//     // Room transition properties
-//     void setTargetRoom(int roomId) { }
+public:
+    explicit Exit(int x, int y, int width, int height, QString label, int next_level);
+    void loadAnimationFrames();
+    void activate();
+    ~Exit();
 
-// private:
-//     int m_targetRoomId;
-//     QPointF m_playerSpawnPoint;
-//     QRectF m_triggerArea;
-// };
+private:
+    int next_level;
+    bool is_activated;
+    int width;
+    int height;
+};
 
-// #endif // EXIT_H
+#endif // EXIT_H
