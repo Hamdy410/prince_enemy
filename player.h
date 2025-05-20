@@ -7,20 +7,18 @@
 #include <QKeyEvent>
 #include <QList>
 #include <QSet>
-
+#include "player_animation.h"
 #include "score.h"
 #include "health.h"
+#include "gate.h"
 
 class tile;
 class Enemy;
 
 enum movement {
     StillRight, StillLeft, WalkRight, WalkLeft,
-    JumpRight, JumpLeft, HopRight, HopLeft,
-    ClimbRight, ClimbLeft, HangRight, HangLeft,
-    ArmRight, ArmLeft, UnarmRight, UnarmLeft,
-    SwordIdleRight, SwordIdleLeft, AttackLeft,
-    AttackRight
+    JumpRight, JumpLeft, HopRight, HopLeft, AttackLeft,
+    AttackRight,crouchRight,crouchLeft
 };
 
 class player : public QObject {
@@ -31,7 +29,7 @@ public:
     ~player();
     void handleKeyPress(QKeyEvent* event);
     void handleKeyRelease(QKeyEvent* event);
-    void update(const QList<tile*>& tiles);
+    void update(const QList<tile*>& tiles, const QList<Gate*>& gates);
     void draw(QPainter* painter);
     QRectF boundingRect() const;
     QPointF pos() const;
@@ -48,7 +46,7 @@ public:
     QRectF hurtRegion() const;
     QRectF hitRegion() const;
     QRectF feetRegion() const;
-    bool isAttacking() const { return attackInProgress; }
+    bool isAttacking(){ return is_attacking; }
     QSet<Enemy*>& enemiesHitThisAttack() { return m_enemiesHitThisAttack; }
 
     // Health and Score representations:
@@ -57,44 +55,33 @@ public:
     bool isDead() const { return m_health <= 0; }
 
 private:
-    void checkCollisions(const QList<tile*>& tiles);
+    void checkCollisions(const QList<tile*>& tiles, const QList<Gate*>& gates);
 
     // score m_score;
     // health m_health;
 
     int m_health = 100;
-
+    Animation* player_anim;
     movement statue;
     qreal m_x, m_y;
     qreal groundy;
     int frame;
-    bool isClimb;
     int isHopping;
+    bool RightFacingDirection;
     int isJumping;
-    bool stopwalkingRight;
-    bool stopwalkingLeft;
+    bool isFalling;
     QPixmap currentImageRight;
     QPixmap currentImageLeft;
     QList<QList<QPixmap>> animationFrames;
+    void fall(const QList<tile*>& tiles, const QList<Gate*>& gates);
+    bool isCrouching;
 
     // Animation helpers
     int m_animCounter = 0;
     int m_animDelay = 8;
 
-    // Falling/jumping physics
-    float m_velocityY = 0.0f;
-    bool m_inAir = false;
-    bool m_justLanded = false;
-
-    // Ledge grab helpers
-    int climbFrame = 0;
-    int hangFrame = 0;
-
     // Attack Animation Parameters
-    bool swordOut = false;
-    bool attackInProgress = false;
-    bool armingInProgress = false;
-    bool unarmingInProgress = false;
+    bool is_attacking = false;
     static constexpr int HURT_REGION_WIDTH = 27;
     QSet<Enemy*> m_enemiesHitThisAttack;
 
@@ -103,14 +90,11 @@ private:
     Score* m_scoreBar;
 
     // Fall Damage system
-    float m_fallStartY = 0.0f;
+    float falling_distance = 0.0f;
+    float damage_of_falling=0;
 
-    // Right and jump simultaneously
-    bool rightPressed = false;
-    bool leftPressed = false;
+    //jump simultaneously
     bool upPressed = false;
-
-    int jumpBufferFrames = 0;
     const int JUMP_BUFFER_MAX = 4;
 };
 

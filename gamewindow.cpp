@@ -124,8 +124,7 @@ void GameWindow::paintEvent(QPaintEvent *event) {
 
     // Draw tiles
     for (tile* t : m_tiles) {
-        painter.drawPixmap(t->pos(), t->pixmap());
-
+        painter.drawRect(t->boundingRect());
         if (m_debugMode) {
             painter.setPen(QPen(Qt::green, 2));
             painter.setBrush(Qt::transparent);
@@ -267,7 +266,7 @@ void GameWindow::resizeEvent(QResizeEvent *event) {
         int playerStartX = firstTile->pos().x();
         int playerStartY = firstTile->pos().y() - m_player->boundingRect().height();
 
-        m_player->setPos(playerStartX, playerStartY);
+        m_player->setPos(playerStartX, playerStartY-200);
         m_player->setGround(playerStartY);
     }
 
@@ -389,7 +388,7 @@ void GameWindow::updateGame() {
         }
     }
 
-    m_player->update(m_tiles);
+    m_player->update(m_tiles,m_gates);
 
     // --- Player attack Logic ---
     if (m_player->isAttacking()) {

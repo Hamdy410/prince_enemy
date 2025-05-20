@@ -12,9 +12,9 @@
 
 #include<QPainter>
 #include<QRectF>
-#include<QGraphicsPixmapItem>
+#include<QGraphicsRectItem>
 
-class tile: public QGraphicsPixmapItem
+class tile: public QGraphicsRectItem
 {
 public:
     int groundy;

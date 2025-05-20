@@ -99,6 +99,8 @@ public:
         m_animation->start(15);
     }
 
+    QRectF calculateHitRegion() const;
+
 signals:
     void positionChanged();
     void visualChanged();

@@ -10,6 +10,7 @@ DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs depr
 
 SOURCES += \
     animation.cpp \
+    choppers.cpp \
     enemy.cpp \
     exit.cpp \
     gamewindow.cpp \
@@ -20,6 +21,7 @@ SOURCES += \
     mainwindow.cpp \
     obstacle.cpp \
     player.cpp \
+    player_animation.cpp \
     pressuretile.cpp \
     score.cpp \
     spikes.cpp \
@@ -27,6 +29,7 @@ SOURCES += \
 
 HEADERS += \
     animation.h \
+    choppers.h \
     enemy.h \
     exit.h \
     gamewindow.h \
@@ -36,6 +39,7 @@ HEADERS += \
     mainwindow.h \
     obstacle.h \
     player.h \
+    player_animation.h \
     pressuretile.h \
     score.h \
     spikes.h \

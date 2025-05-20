@@ -217,12 +217,12 @@ void Enemy::render(QPainter *painter) {
         // QRectF enemyRect(m_position, QSizeF(m_animation->frameWidth(), m_animation->frameHeight()));
         // Determine the hit region
 
-        // QRectF hitRegion = enemyRect;
-        // if (m_facingDirection > 0) {
-        //     hitRegion.setLeft(hitRegion.left() + hitRegion.width() / 2.0);
-        // } else {
-        //     hitRegion.setWidth(hitRegion.width() / 2.0);
-        // }
+        //QRectF hitRegion = calculateHitRegion();
+        //painter->save();
+        //painter->setPen(QPen(Qt::blue, 2));
+        //painter->setBrush(QColor(0, 0, 255, 100));
+        //painter  ->drawRect(hitRegion);
+        //painter->restore();
 
         // painter->save();
         // painter->setPen(QPen(Qt::blue, 2));
@@ -282,19 +282,7 @@ bool Enemy::checkPlayerCollision() {
     if (!m_player || !m_alive || m_isAttacking)
         return false;
 
-    QRectF enemyRect(m_position, QSize(m_animation->frameWidth(), m_animation->frameHeight()));
-    QRectF playerRect = m_player->boundingRect().translated(m_player->pos());
-
-    // --- Define the "front half" hit region ---
-    QRectF hitRegion = enemyRect;
-    if (m_facingDirection > 0) {
-        // Facing right: right half
-        hitRegion.setLeft(hitRegion.left() + hitRegion.width() / 2.0);
-    } else {
-        // Facing left: left half
-        hitRegion.setWidth(hitRegion.width() / 2.0);
-    }
-
+    QRectF hitRegion = calculateHitRegion();
     return hitRegion.intersects(m_player->hurtRegion());
 }
 
@@ -340,7 +328,7 @@ bool Enemy::checkForEdge() {
     bool foundGround = false;
 
     for (QGraphicsItem* item : m_tiles) {
-        QRectF tileRect = item->sceneBoundingRect();
+        QRectF tileRect = item->boundingRect();
 
         if (checkX >= tileRect.left() && checkX <= tileRect.right()) {
             if (qAbs(checkY - tileRect.top()) < 10) {
@@ -370,3 +358,28 @@ QRectF Enemy::hurtRegion() const {
     qreal hurtX = centerX - HURT_REGION_WIDTH / 2.0;
     return QRectF(hurtX, enemyBox.top(), HURT_REGION_WIDTH, enemyBox.height());
 }
+
+QRectF Enemy::calculateHitRegion() const {
+    QRectF enemyRect(m_position, QSize(m_animation->frameWidth(), m_animation->frameHeight()-5));
+    QRectF hitRegion = enemyRect;
+
+    // Set horizontal dimensions based on facing direction
+    if (m_facingDirection > 0) {
+        // Facing right: right half
+        hitRegion.setLeft(hitRegion.left() + hitRegion.width() / 2.0);
+    } else {
+        // Facing left: left half
+        hitRegion.setWidth(hitRegion.width() / 2.0);
+    }
+
+    // Set vertical dimensions
+    qreal heightPercentage = 0.55; // 55% of enemy height
+    qreal newHeight = enemyRect.height() * heightPercentage;
+    hitRegion.setHeight(newHeight);
+
+    // Center vertically (or adjust as needed)
+    hitRegion.moveTop(enemyRect.top() + (enemyRect.height() - newHeight) / 2.0);
+
+    return hitRegion;
+}
+

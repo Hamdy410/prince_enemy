@@ -5,6 +5,7 @@
 Level1Window::Level1Window(QWidget* parent) : GameWindow(parent)
 {
     setWindowTitle("Level 1");
+    m_currentRoom = ROOM_ONE;
     initializeGame();
 }
 
