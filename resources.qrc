@@ -7,8 +7,25 @@
         <file>EnvironSpriteOK.png</file>
         <file>spikes.png</file>
         <file>gate.png</file>
-        <file>ChopperClosed.jpg</file>
-        <file>ChopperOpen.jpg</file>
-        <file>ChopperPartialopen.jpg</file>
+        <file>lvl1-scn1-back.png</file>
+        <file>ChopperClosed.png</file>
+        <file>ChopperOpen.png</file>
+        <file>ChopperPartialopen.png</file>
+        <file>lvl1-scn1-fore.png</file>
+        <file>lvl1-scn2-back.png</file>
+        <file>lvl1-scn2-fore.png</file>
+        <file>lvl1-scn3-back.png</file>
+        <file>lvl1-scn3-fore.png</file>
+        <file>lvl1-scn4-back.png</file>
+        <file>lvl1-scn4-fore.png</file>
+        <file>lvl1-scn5-back.png</file>
+        <file>lvl1-scn5-fore.png</file>
+        <file>lvl1-scn6-back.png</file>
+        <file>lvl1-scn6-fore.png</file>
+        <file>lvl1-scn7-back.png</file>
+        <file>lvl1-scn7-fore.png</file>
+        <file>lvl1-scn8-back.png</file>
+        <file>lvl1-scn8-fore.png</file>
+        <file>exit.jpeg</file>
     </qresource>
 </RCC>

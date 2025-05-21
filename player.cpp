@@ -10,9 +10,9 @@
 #include <QList>
 #include <QDebug>
 
-player::player(bool right, QObject* parent)
+player::player(bool right, int health, QObject* parent)
     : QObject(parent),
-    m_health(15),
+    m_health(health),
     statue(right ? StillRight : StillLeft),
     m_x(100), m_y(100), groundy(100),
     frame(0),isCrouching(false),
@@ -196,24 +196,24 @@ void player::handleKeyRelease(QKeyEvent* event) {
         }
     }
 }
-void player::fall(const QList<tile*>& tiles, const QList<Gate*>& gates){
+void player::fall(const QList<tile*>& tiles, const QList<Gate*>& gates,const QList<Chopper*>& choppers,const QList<wall*>& walls,const QList<ceiling*>& ceilings){
     if(isJumping || isHopping==2)
         return ;
     if(!isFalling)
         return ;
     m_y+= 10;
     falling_distance+= 10;
-    const float FALL_DAMAGE_THRESHOLD = 200.0f;
+    const float FALL_DAMAGE_THRESHOLD = 400.0f;
     if (falling_distance > FALL_DAMAGE_THRESHOLD) {
         damage_of_falling++;
     }
-    checkCollisions(tiles,gates);
+    checkCollisions(tiles,gates,choppers,walls,ceilings);
 }
-void player::update(const QList<tile*>& tiles, const QList<Gate*>& gates) {
+void player::update(const QList<tile*>& tiles, const QList<Gate*>& gates,const QList<Chopper*>& choppers,const QList<wall*>& walls,const QList<ceiling*>& ceilings) {
     if(isFalling && !isJumping && isHopping!=2){
         isJumping=0;
         isHopping=0;
-        fall(tiles,gates);
+        fall(tiles,gates,choppers,walls,ceilings);
         return ;
     }
     if(!isFalling)
@@ -294,7 +294,7 @@ void player::update(const QList<tile*>& tiles, const QList<Gate*>& gates) {
         isFalling=false;
         if (m_animCounter >= 2) {
             if (frame < 11) {
-                m_y-= (15-frame); //this equation makes the jumping slower each time the player rises
+                m_y-= (20-frame); //this equation makes the jumping slower each time the player rises
                 ++frame;
                 isJumping=2;
                 isFalling=false;
@@ -338,7 +338,7 @@ void player::update(const QList<tile*>& tiles, const QList<Gate*>& gates) {
     }
 
     // Always check collisions after movement/gravity
-    checkCollisions(tiles,gates);
+    checkCollisions(tiles,gates,choppers,walls,ceilings);
 
     if (isFalling && !isJumping && isHopping!=2) {
         if (RightFacingDirection)
@@ -460,7 +460,7 @@ void player::setGround(qreal groundY) {
     groundy = groundY;
 }
 
-void player::checkCollisions(const QList<tile*> &tiles, const QList<Gate*>& gates) {
+void player::checkCollisions(const QList<tile*> &tiles, const QList<Gate*>& gates,const QList<Chopper*>& choppers,const QList<wall*>& walls,const QList<ceiling*>& ceilings) {
     if(isHopping==2 && isJumping==2) //to jump without hitting the ground
         return;
     bool touchedTile=false;
@@ -470,10 +470,29 @@ void player::checkCollisions(const QList<tile*> &tiles, const QList<Gate*>& gate
         QRectF gateBox = g->boundingRect().translated(g->pos().x(), g->pos().y());
         if (playerBox.intersects(gateBox) && !g->isOpen()) {
             if(playerBox.right()>=((gateBox.left()+gateBox.right())/2+20) && (statue==StillRight || statue==WalkRight || statue==HopRight || statue==JumpRight)){
-                m_x = gateBox.left() - 6;
+                m_x = gateBox.left()+16;
             }else if(playerBox.left()>=((gateBox.left()+gateBox.right())/2-20) && (statue==StillLeft || statue==WalkLeft || statue==HopLeft || statue==JumpLeft)){
-                m_x = gateBox.right() + 6;
+                m_x = gateBox.right()-16;
             }
+        }
+    }
+    for (wall* w: walls) {
+        QRectF wallBox = w->boundingRect();
+        if (playerBox.intersects(wallBox)) {
+            float overlapLeft = playerBox.right() - wallBox.left();
+            float overlapRight = wallBox.right() - playerBox.left();
+            float minOverlap = qMin(overlapRight,overlapLeft);
+            if(minOverlap==overlapLeft){
+                 m_x = wallBox.left()+19;
+            }else{
+                m_x = wallBox.right()-19;
+            }
+        }
+    }
+    for(Chopper* c : choppers){
+        QRectF chopperBox  = QRectF(c->pos().x()+10,c->pos().y(),c->boundingRect().width()-10,c->boundingRect().height());
+        if(chopperBox.intersects(playerBox)){
+            c->onCollide(this);
         }
     }
     // 1. Check for landing on top of a tile
@@ -503,6 +522,26 @@ void player::checkCollisions(const QList<tile*> &tiles, const QList<Gate*>& gate
             // TODO: Add ledge grab and side collision logic here if desired
         }
     }
+    for (ceiling* c: ceilings) {
+        QRectF ceilingBox = c->boundingRect();
+        float overlapTop = playerBox.bottom() - ceilingBox.top();
+        float overlapBottom = ceilingBox.bottom() - playerBox.top();
+        float minOverlap = qMin(overlapTop,overlapBottom);
+
+        if (playerBox.intersects(ceilingBox)) {
+            if (minOverlap == overlapBottom) {
+                isFalling = true;
+                isJumping=0;
+                isHopping=0;
+                if (RightFacingDirection)
+                    statue = StillRight;
+                else if (!RightFacingDirection)
+                    statue = StillLeft;
+            }
+            // TODO: Add ledge grab and side collision logic here if desired
+        }
+    }
+
     if(!touchedTile && !isFalling){
         isFalling = true;
     }

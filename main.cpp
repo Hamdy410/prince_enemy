@@ -1,22 +1,16 @@
-#include "startpage.h"
+#include "mainwindow.h"
 #include "level1window.h"
-#include <QApplication>
+#include "gamewindow.h"
 
 #include <QApplication>
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    StartPage startPage("Prince of Persia", 1);
-    Level1Window* LevelWindow = nullptr;
+    qApp->processEvents(QEventLoop::AllEvents);
 
-    QObject::connect(&startPage, &StartPage::startRequested, [&]() {
-        startPage.close();
-        LevelWindow = new Level1Window();
-        LevelWindow->show();
-    });
-
-    startPage.show();
+    Level1Window w;
+    w.show();
 
     return a.exec();
 }

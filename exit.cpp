@@ -1,32 +1,31 @@
 #include "exit.h"
 
-Exit::Exit(int x, int y, int width, int height, QString label, int next_level)
+Exit::Exit(int x, int y)
     : Gate(QPointF(x, y))
-    , next_level(next_level)
     , is_activated(false)
-    , width(width)
-    , height(height)
 {
+    loadAnimationFrames();
 }
 
 
 void Exit::loadAnimationFrames()
 {
-    QPixmap spritesheet(":/images/exit.png");
+    QPixmap spritesheet(":/images/exit.jpeg");
 
     if (spritesheet.isNull()) {
         return;
     }
 
     int columns = 16;
-    int frameWidth = width;
-    int frameHeight = height;
+    int frameWidth = spritesheet.width() / columns;
+    int frameHeight = spritesheet.height();
 
     m_totalFrames = columns;
     m_frames.clear();
 
     for (int i = 0; i < columns; ++i) {
         QPixmap frame = spritesheet.copy(i * frameWidth, 0, frameWidth, frameHeight);
+        frame = frame.scaled(114,144);
         m_frames.push_back(frame);
     }
 }

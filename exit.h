@@ -11,16 +11,13 @@ class Exit : public Gate
     Q_OBJECT
 
 public:
-    explicit Exit(int x, int y, int width, int height, QString label, int next_level);
+    explicit Exit(int x, int y);
     void loadAnimationFrames();
     void activate();
     ~Exit();
 
 private:
-    int next_level;
     bool is_activated;
-    int width;
-    int height;
 };
 
 #endif // EXIT_H

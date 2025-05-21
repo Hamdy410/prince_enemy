@@ -10,13 +10,15 @@ DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs depr
 
 SOURCES += \
     animation.cpp \
-    choppers.cpp \
+    ceiling.cpp \
+    chopper.cpp \
     enemy.cpp \
     exit.cpp \
     gamewindow.cpp \
     gate.cpp \
     health.cpp \
     level1window.cpp \
+    level2window.cpp \
     main.cpp \
     mainwindow.cpp \
     obstacle.cpp \
@@ -25,18 +27,22 @@ SOURCES += \
     pressuretile.cpp \
     score.cpp \
     spikes.cpp \
-    startpage.cpp \
-    tile.cpp
+    structure.cpp \
+    tile.cpp \
+    transition.cpp \
+    wall.cpp
 
 HEADERS += \
     animation.h \
-    choppers.h \
+    ceiling.h \
+    chopper.h \
     enemy.h \
     exit.h \
     gamewindow.h \
     gate.h \
     health.h \
     level1window.h \
+    level2window.h \
     mainwindow.h \
     obstacle.h \
     player.h \
@@ -44,8 +50,10 @@ HEADERS += \
     pressuretile.h \
     score.h \
     spikes.h \
-    startpage.h \
-    tile.h
+    structure.h \
+    tile.h \
+    transition.h \
+    wall.h
 
 FORMS += \
     mainwindow.ui

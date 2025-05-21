@@ -8,18 +8,21 @@ class Level1Window : public GameWindow
 public:
     explicit Level1Window(QWidget* parent = nullptr);
     enum Room {
-        ROOM_ONE, ROOM_TWO, ROOM_THREE, ROOM_FOUR
+        ROOM_ONE, ROOM_TWO, ROOM_THREE, ROOM_FOUR,ROOM_FIVE,ROOM_SIX,ROOM_SEVEN,ROOM_EIGHT
     };
 
 protected:
     using GameWindow::createTiles;
-    void createTiles() override;
-
+    void createTilesandWallsandCeiling() override;
     void createRoom1();
     void createRoom2();
     void createRoom3();
     void createRoom4();
-
+    void createRoom5();
+    void createRoom6();
+    void createRoom7();
+    void createRoom8();
+    void getNextRoom() override;
     void changeRoom(Room newRoom);
 
 private:

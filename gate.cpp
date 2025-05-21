@@ -43,13 +43,13 @@ void Gate::loadAnimationFrames()
 
     m_totalFrames = columns;
     m_frames.clear();
-
     for (int i = 0; i < columns; ++i) {
         QPixmap frame = spritesheet.copy(i * frameWidth, 0, frameWidth, frameHeight);
+        frame = frame.scaled(frameWidth,frameHeight+30);
         m_frames.push_back(frame);
-    }
 
 
+}
 }
 
 void Gate::Open()

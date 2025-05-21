@@ -13,7 +13,7 @@ public:
     ~Gate();
 
     bool isSolid() const { return !m_isOpen; }
-    bool isOpen() const { return m_isOpen; }
+    bool isOpen() const { return m_isOpen || m_isOpening; }
 
     static constexpr int SINK_OFFSET = 40;
 
@@ -21,16 +21,16 @@ public slots:
     void Open();
     void Close();
 
-private slots:
-    void updateAnimation();
+protected slots:
+    virtual void updateAnimation();
 
-private:
+protected:
     void loadAnimationFrames();
 
     bool m_isOpen;
     bool m_isAnimating;
     bool m_isOpening;
-
+    int seconds=0;
     int m_currentFrame;
     int m_totalFrames;
     QVector<QPixmap> m_frames;

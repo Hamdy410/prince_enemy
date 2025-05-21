@@ -1,13 +1,16 @@
 #include "pressuretile.h"
 #include "gate.h"
 
-PressureTile::PressureTile(int x, int y, bool hasEnemy)
-    : tile(x, y - 2, hasEnemy),
+PressureTile::PressureTile(int x, int y, bool hasEnemy, int width, int height)
+    : tile(x, y - 2, hasEnemy,width,height),
     m_pressed(false),
     m_normalY(y - 2),
     m_pressedY(y),
     m_connectedGate(nullptr)
 {
+    QPixmap SpriteSheet(":/images/EnvironSpriteOK.png");
+    image = new QPixmap(SpriteSheet.copy(127, 685, 60, 18));
+    *image = image->scaled(116, 38);
     setPos(x, m_normalY);
 }
 
@@ -57,4 +60,6 @@ void PressureTile::paint(QPainter *painter, const QStyleOptionGraphicsItem *opti
     painter->setPen(QPen(isPressed() ? Qt::red : Qt::blue, 2));
     painter->drawRect(boundingRect());
 }
-
+void PressureTile::draw(QPainter* painter){
+    painter->drawPixmap(pos().x()-20,pos().y()-20,*image);
+}

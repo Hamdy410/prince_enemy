@@ -11,7 +11,9 @@
 #include "score.h"
 #include "health.h"
 #include "gate.h"
-
+#include "chopper.h"
+#include "wall.h"
+#include "ceiling.h"
 class tile;
 class Enemy;
 
@@ -25,11 +27,11 @@ class player : public QObject {
     Q_OBJECT
 
 public:
-    player(bool right = true, QObject* parent = nullptr);
+    player(bool right = true, int health=15,QObject* parent = nullptr);
     ~player();
     void handleKeyPress(QKeyEvent* event);
     void handleKeyRelease(QKeyEvent* event);
-    void update(const QList<tile*>& tiles, const QList<Gate*>& gates);
+    void update(const QList<tile*>& tiles, const QList<Gate*>& gates,const QList<Chopper*>& choppers,const QList<wall*>& walls,const QList<ceiling*>& ceilings);
     void draw(QPainter* painter);
     QRectF boundingRect() const;
     QPointF pos() const;
@@ -48,14 +50,13 @@ public:
     QRectF feetRegion() const;
     bool isAttacking(){ return is_attacking; }
     QSet<Enemy*>& enemiesHitThisAttack() { return m_enemiesHitThisAttack; }
-
     // Health and Score representations:
     Health* healthBar() const { return m_healthBar; }
     Score* scoreBar() const { return m_scoreBar; }
     bool isDead() const { return m_health <= 0; }
 
 private:
-    void checkCollisions(const QList<tile*>& tiles, const QList<Gate*>& gates);
+    void checkCollisions(const QList<tile*>& tiles, const QList<Gate*>& gates,const QList<Chopper*>& choppers,const QList<wall*>& walls,const QList<ceiling*>& ceilings);
 
     // score m_score;
     // health m_health;
@@ -69,11 +70,13 @@ private:
     int isHopping;
     bool RightFacingDirection;
     int isJumping;
+    bool rightPressed=false;
+    bool leftPressed=false;
     bool isFalling;
     QPixmap currentImageRight;
     QPixmap currentImageLeft;
     QList<QList<QPixmap>> animationFrames;
-    void fall(const QList<tile*>& tiles, const QList<Gate*>& gates);
+    void fall(const QList<tile*>& tiles, const QList<Gate*>& gates,const QList<Chopper*>& choppers,const QList<wall*>& walls,const QList<ceiling*>& ceilings);
     bool isCrouching;
 
     // Animation helpers

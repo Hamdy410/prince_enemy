@@ -1,14 +1,27 @@
+/*
+ * Original Author: Kareem Adel
+ * Modified by: Hamdy El-Madbouly
+ * Start Date:
+ * Modification Date: 25 Dec, 2025
+ * End Date: 26 Dec, 2025
+ * Description:
+ */
+
 #ifndef TILE_H
 #define TILE_H
 
+#include<QPainter>
 #include<QRectF>
-#include"structure.h"
+#include<QGraphicsRectItem>
 
-class tile: public Structure
+class tile: public QGraphicsRectItem
 {
 public:
     int groundy;
-    tile(int x, int y, int width, int height, QString label, bool hasEnemy);
+    virtual void paint(QPainter *painter,
+                       const QStyleOptionGraphicsItem *option,
+                       QWidget *widget) override;
+    tile(int x, int y, bool hasEnemy, int width = 60, int height = 2);
     bool hasEnemy() const { return m_hasEnemy; }
     void setHasEnemy(bool value) { m_hasEnemy = value; }
 

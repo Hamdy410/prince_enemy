@@ -12,21 +12,33 @@ GameWindow::GameWindow(QWidget *parent) : QMainWindow(parent), m_debugMode(false
     m_frameCounter(0), m_fps(0)
 {
     setWindowTitle("Enemy Game");
-    resize(640, 480);
+    resize(640, 463);
     m_fpsTimer.start();
-
+    transitionX=450;
+    transitionY=400;
+    transitionWidth=20;
+    transitionHeight=20;
+    PositionPlayerx=0;
+    PositionPlayery=0;
+    total_health=15;
+    transition = new Transition(transitionX,transitionY,transitionWidth,transitionHeight);
+    Background=nullptr;
     connect(&m_gameTimer, &QTimer::timeout, this, &GameWindow::updateGame);
 }
-
+void GameWindow::getNextRoom(){}
 GameWindow::~GameWindow() {
     m_gameTimer.stop();
 
     for (Enemy* enemy : m_enemies) delete enemy;
     for (tile* t: m_tiles) delete t;
     for (Spikes* spike : m_spikes) delete spike;
+    for(Chopper* chopper: m_choppers) delete chopper;
     delete m_player;
+    delete transition;
 }
+void GameWindow::stopGame(){
 
+}
 void GameWindow::initializeGame() {
     for (Gate* gate : m_gates) delete gate;
     m_gates.clear();
@@ -37,20 +49,21 @@ void GameWindow::initializeGame() {
     m_enemies.clear();
     for (Spikes* spike : m_spikes) delete spike;
     m_spikes.clear();
-
-    m_player = new player(true, this);
-
-    createTiles();
-
+    for(Chopper* chopper: m_choppers) delete chopper;
+    m_choppers.clear();
+    delete transition;
+    transition = new Transition(transitionX,transitionY,transitionWidth,transitionHeight);
+    createTilesandWallsandCeiling();
+    m_player = new player(true, total_health, this);
+    if(PositionPlayerx==-1){
     if (!m_tiles.isEmpty()) {
         tile* firstTile = m_tiles.first();
-        int playerStartX = firstTile->pos().x();
-        int playerStartY = firstTile->pos().y() - m_player->boundingRect().height();
-
-        m_player->setPos(playerStartX, playerStartY);
-        m_player->setGround(playerStartY);
+        PositionPlayerx = firstTile->boundingRect().left();
+        PositionPlayery = firstTile->boundingRect().y() - m_player->boundingRect().height();
     }
-
+    }
+    m_player->setPos(PositionPlayerx, PositionPlayery);
+    m_player->setGround(PositionPlayery);
     QList<QList<QGraphicsItem*>> platforms;
     QList<QGraphicsItem*> currentPlatform;
 
@@ -119,24 +132,37 @@ void GameWindow::initializeGame() {
 void GameWindow::paintEvent(QPaintEvent *event) {
     Q_UNUSED(event);
     QPainter painter(this);
-
-    painter.fillRect(rect(), Qt::white);
-
+    if(Background){
+        *Background = Background->scaled(640,480);
+    painter.drawPixmap(0,0,*Background);
+    }
     // Draw tiles
     for (tile* t : m_tiles) {
+        if(dynamic_cast<PressureTile*>(t)){
+            PressureTile* p = dynamic_cast<PressureTile*>(t);
+            p->draw(&painter);
+            //painter.drawRect(p->boundingRect());
+        }else{
+            if(false){
+        painter.save();
+        painter.setPen(QPen(Qt::red, 2));
         painter.drawRect(t->boundingRect());
-        if (m_debugMode) {
-            painter.setPen(QPen(Qt::green, 2));
-            painter.setBrush(Qt::transparent);
-            painter.drawRect(t->boundingRect().translated(t->pos()));
+        painter.restore();
+            }
         }
     }
-
+    if(false){
+    painter.setPen(QPen(Qt::green, 10));
+    painter.setBrush(QBrush(Qt::red));
+    painter.drawRect(transition->boundingRect());
+    }
     // Draw Spikes
     for (Spikes* spike : m_spikes) {
         spike->render(&painter);
     }
-
+    for(Chopper* chopper: m_choppers){
+        chopper->render(&painter);
+    }
 
     // Draw Enemies
     for (Enemy* enemy : m_enemies) {
@@ -145,8 +171,13 @@ void GameWindow::paintEvent(QPaintEvent *event) {
 
     // Draw gates
     for (Gate* gate : m_gates) {
-        painter.drawPixmap(gate->pos(), gate->pixmap());
+        if(dynamic_cast<Exit*>(gate)){
+            Exit* exit = dynamic_cast<Exit*>(gate);
+            painter.drawPixmap(exit->pos().x(),exit->pos().y()-50, exit->pixmap());
+        }else{
+            painter.drawPixmap(gate->pos().x(),gate->pos().y()-50, gate->pixmap());
 
+        }
         if (m_debugMode) {
             painter.setPen(QPen(Qt::red, 2));
             painter.drawRect(gate->boundingRect().translated(gate->pos()));
@@ -156,7 +187,29 @@ void GameWindow::paintEvent(QPaintEvent *event) {
     // Draw player
     m_player->draw(&painter);
 
+    if(Foreground){
+        *Foreground = Foreground->scaled(640,480);
+        painter.drawPixmap(0,0,*Foreground);
+    }
+    if(false){
+    for (wall* w : m_walls) {
+        painter.drawRect(w->boundingRect());
+        if (m_debugMode) {
+            painter.setPen(QPen(Qt::green, 2));
+            painter.setBrush(Qt::transparent);
+            painter.drawRect(w->boundingRect().translated(w->pos()));
+        }
+    }
 
+    for (ceiling* c : m_ceilings) {
+        painter.drawRect(c->boundingRect());
+        if (m_debugMode) {
+            painter.setPen(QPen(Qt::green, 2));
+            painter.setBrush(Qt::transparent);
+            painter.drawRect(c->boundingRect().translated(c->pos()));
+        }
+    }
+    }
     m_frameCounter++;
     if (m_fpsTimer.elapsed() >= 1000) {
         m_fps = m_frameCounter;
@@ -168,6 +221,7 @@ void GameWindow::paintEvent(QPaintEvent *event) {
 
     m_player->healthBar()->draw(&painter, 20, 20, 200, 20);
     m_player->scoreBar()->draw(&painter, 20, 60);
+
 
     if (m_gameOver) {
         QPainter painter(this);
@@ -259,16 +313,17 @@ void GameWindow::resizeEvent(QResizeEvent *event) {
 
     QMap<Enemy*, QList<QGraphicsItem*>> enemyPlatforms;
 
-    createTiles();
+    createTilesandWallsandCeiling();
 
-    if (!m_tiles.isEmpty()) {
-        tile* firstTile = m_tiles.first();
-        int playerStartX = firstTile->pos().x();
-        int playerStartY = firstTile->pos().y() - m_player->boundingRect().height();
-
-        m_player->setPos(playerStartX, playerStartY-200);
-        m_player->setGround(playerStartY);
+    if(PositionPlayerx==-1){
+        if (!m_tiles.isEmpty()) {
+            tile* firstTile = m_tiles.first();
+            PositionPlayerx = firstTile->boundingRect().left();
+            PositionPlayery = firstTile->boundingRect().y() - m_player->boundingRect().height();
+        }
     }
+    m_player->setPos(PositionPlayerx, PositionPlayery);
+    m_player->setGround(PositionPlayery);
 
     QList<QList<QGraphicsItem*>> platforms;
     QList<QGraphicsItem*> currentPlatform;
@@ -365,6 +420,7 @@ QString GameWindow::stateToString(Enemy::State state) const {
 }
 
 void GameWindow::updateGame() {
+    total_health = m_player->healthBar()->getHealth();
     // Check if player is out of bounds
     if (m_player->pos().y() > height() ||
         m_player->pos().x() < -50 ||
@@ -388,8 +444,21 @@ void GameWindow::updateGame() {
         }
     }
 
-    m_player->update(m_tiles,m_gates);
-
+    m_player->update(m_tiles,m_gates,m_choppers,m_walls,m_ceilings);
+    QRectF playerBox = m_player->boundingRect().translated(m_player->pos());
+    QRectF transitionBox = transition->boundingRect();
+    if(transitionBox.intersects(playerBox)){
+        getNextRoom();
+        m_gameTimer.stop();
+        initializeGame();
+        m_gameTimer.start();
+        // --- Resize Workaround ---
+        QSize orig = size();
+        resize(orig.width(), orig.height() + 1);
+        resize(orig);
+        // -------------------------
+        update();
+    }
     // --- Player attack Logic ---
     if (m_player->isAttacking()) {
         QRectF playerHit = m_player->hitRegion();
@@ -418,10 +487,10 @@ void GameWindow::updateGame() {
 }
 
 QList<tile*> GameWindow::createTiles(int startX, int y, int count,
-                                      int tileWidth, bool createEnemy,
+                                      int tileWidth, int tileHeight, bool createEnemy,
                                       int overlap, const QList<int>& spikeIndices,
                                       const QList<int>& pressureIndices,
-                                      const QList<int>& gateIndices) {
+                                      const QList<int>& gateIndices,  const QList<int>& choppersIndices) {
     QList<tile*> tileList;
 
     for (int i = 0; i < count; i++) {
@@ -430,45 +499,60 @@ QList<tile*> GameWindow::createTiles(int startX, int y, int count,
 
         tile* newTile = nullptr;
         if (pressureIndices.contains(i)) {
-            newTile = new PressureTile(x, y, tileHasEnemy);
+            newTile = new PressureTile(x, y, tileHasEnemy,tileWidth,tileHeight);
         } else {
-            newTile = new tile(x, y, tileHasEnemy);
+            newTile = new tile(x, y, tileHasEnemy,tileWidth, tileHeight);
         }
         tileList.append(newTile);
-
+        if (choppersIndices.contains(i)) {
+            Chopper* chopper = new Chopper(QPointF(x, y - 80 + 20),15,200,0,1000);
+            m_choppers.append(chopper);
+            chopper->setPos(x, y - 80 + 20);
+        }
         if (spikeIndices.contains(i)) {
             Spikes* spike = new Spikes(QPointF(x, y - Spikes::FRAME_HEIGHT + Spikes::SPIKE_SINK_OFFSET_Y));
             spike->setOffset(0, 6);
             m_spikes.append(spike);
         }
-
         if (gateIndices.contains(i)) {
             Gate* gate = new Gate(QPointF(x, y - 80 + Gate::SINK_OFFSET));
             m_gates.append(gate);
         }
     }
-
+    transition = new Transition(transitionX,transitionY,transitionWidth,transitionHeight);
+    transition->setPos(transitionX,transitionY);
     return tileList;
 }
 
-void GameWindow::createTiles() {
-    for (Gate* gate : m_gates) delete gate;
-    m_gates.clear();
+QList<ceiling*> GameWindow::createCeiling(int startX, int y,
+                                      int tileWidth, int tileHeight) {
+    QList<ceiling*> ceilingsList;
 
-    for (tile* t : m_tiles) {
-        delete t;
-    }
-    m_tiles.clear();
+    ceiling* Ceiling = new ceiling(startX,y,tileWidth,tileHeight);
 
-    QList<tile*> platform1 = createTiles(100, height() - 100, 10, 60, true, 28, QList<int>{3, 5});
-    m_tiles.append(platform1);
+    ceilingsList.append(Ceiling);
 
-    QList<tile*> platform2 = createTiles(400, height() - 200, 3, 60, true, 28, QList<int>{1});
-    m_tiles.append(platform2);
-
-    QList<tile*> platform3 = createTiles(50, height() - 300, 5, 60, false, 28, QList<int>{2});
-    m_tiles.append(platform3);
+    return ceilingsList;
 }
+void GameWindow::addExit(int x, int y){
+    m_gates.append(new Exit(x,y));
+}
+QList<wall*> GameWindow::createWalls(int startX, int y,
+                                      int tileWidth, int tileHeight, bool right) {
+    QList<wall*> wallsList;
+
+    wall* Wall = new wall(startX,y,tileWidth,tileHeight,right);
+
+    wallsList.append(Wall);
+
+    return wallsList;
+}
+
+void GameWindow::createTilesandWallsandCeiling() {
+
+}
+
+
 
 void GameWindow::connectPressureTileToGate(int pressureTileIndex, int gateIndex) {
     if (pressureTileIndex >= 0 && pressureTileIndex < m_tiles.size() &&
