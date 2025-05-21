@@ -14,6 +14,7 @@ SOURCES += \
     chopper.cpp \
     enemy.cpp \
     exit.cpp \
+    gamemanager.cpp \
     gamewindow.cpp \
     gate.cpp \
     health.cpp \
@@ -43,6 +44,7 @@ HEADERS += \
     chopper.h \
     enemy.h \
     exit.h \
+    gamemanager.h \
     gamewindow.h \
     gate.h \
     health.h \

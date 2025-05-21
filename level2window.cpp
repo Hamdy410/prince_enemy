@@ -250,6 +250,7 @@ void Level2Window::changeRoom(Room newRoom) {
         update();
     }
 }
+
 void Level2Window::getNextRoom(){
     if(m_currentRoom==ROOM_ONE){
         m_currentRoom=ROOM_TWO;
@@ -265,10 +266,12 @@ void Level2Window::getNextRoom(){
         m_currentRoom=ROOM_SEVEN;
     }else if(m_currentRoom == ROOM_SEVEN){
         this->hide();
-        Level3Window* nextWindow = new Level3Window(this);
-        nextWindow->show();
+        // Instead of creating Level3Window directly, emit a signal
+        emit Level3Requested();
     }
 }
+
+
 void Level2Window::getCurrentRoom(){
     if(m_currentRoom==ROOM_ONE){
         m_currentRoom=ROOM_ONE;

@@ -5,11 +5,16 @@
 
 class Level2Window : public GameWindow
 {
+    Q_OBJECT
+
 public:
     explicit Level2Window(QWidget* parent = nullptr);
     enum Room {
         ROOM_ONE, ROOM_TWO, ROOM_THREE, ROOM_FOUR,ROOM_FIVE,ROOM_SIX,ROOM_SEVEN
     };
+
+signals:
+    void Level3Requested();
 
 protected:
     using GameWindow::createTiles;

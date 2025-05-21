@@ -5,11 +5,16 @@
 
 class Level3Window : public GameWindow
 {
+    Q_OBJECT
+
 public:
     explicit Level3Window(QWidget* parent = nullptr);
     enum Room {
         ROOM_ONE, ROOM_TWO, ROOM_THREE, ROOM_FOUR,ROOM_FIVE,ROOM_SIX,ROOM_SEVEN
     };
+
+signals:
+    void GameCompleted();
 
 protected:
     using GameWindow::createTiles;
