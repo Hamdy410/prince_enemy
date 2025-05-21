@@ -27,5 +27,9 @@
         <file>lvl1-scn8-back.png</file>
         <file>lvl1-scn8-fore.png</file>
         <file>exit.jpeg</file>
+        <file>Idle.png</file>
+        <file>shaking1.png</file>
+        <file>shaking2.png</file>
     </qresource>
+    <qresource prefix="/new/prefix1"/>
 </RCC>

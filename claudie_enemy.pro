@@ -19,6 +19,7 @@ SOURCES += \
     health.cpp \
     level1window.cpp \
     level2window.cpp \
+    loosetile.cpp \
     main.cpp \
     mainwindow.cpp \
     obstacle.cpp \
@@ -43,6 +44,7 @@ HEADERS += \
     health.h \
     level1window.h \
     level2window.h \
+    loosetile.h \
     mainwindow.h \
     obstacle.h \
     player.h \
