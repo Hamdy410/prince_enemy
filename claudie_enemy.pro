@@ -22,15 +22,18 @@ SOURCES += \
     loosetile.cpp \
     main.cpp \
     mainwindow.cpp \
+    menupage.cpp \
     obstacle.cpp \
     player.cpp \
     player_animation.cpp \
     pressuretile.cpp \
     score.cpp \
     spikes.cpp \
+    startpage.cpp \
     structure.cpp \
     tile.cpp \
     transition.cpp \
+    tutorialpage.cpp \
     wall.cpp
 
 HEADERS += \
@@ -46,15 +49,18 @@ HEADERS += \
     level2window.h \
     loosetile.h \
     mainwindow.h \
+    menupage.h \
     obstacle.h \
     player.h \
     player_animation.h \
     pressuretile.h \
     score.h \
     spikes.h \
+    startpage.h \
     structure.h \
     tile.h \
     transition.h \
+    tutorialpage.h \
     wall.h
 
 FORMS += \
