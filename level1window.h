@@ -5,6 +5,8 @@
 
 class Level1Window : public GameWindow
 {
+    Q_OBJECT
+
 public:
     explicit Level1Window(QWidget* parent = nullptr);
     enum Room {
@@ -24,6 +26,9 @@ protected:
     void createRoom8();
     void getNextRoom() override;
     void changeRoom(Room newRoom);
+
+signals:
+    void Level2Requested();
 
 private:
     Room m_currentRoom;

@@ -11,7 +11,10 @@ Level1Window::Level1Window(QWidget* parent) : GameWindow(parent)
 
 void Level1Window::createTilesandWallsandCeiling() {
     for (Gate* gate : m_gates) {
-        delete gate;
+        if (gate) {
+            disconnect(gate);
+            delete gate;
+        }
     }
     m_gates.clear();
 

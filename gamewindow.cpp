@@ -25,7 +25,9 @@ GameWindow::GameWindow(QWidget *parent) : QMainWindow(parent), m_debugMode(false
     Background=nullptr;
     connect(&m_gameTimer, &QTimer::timeout, this, &GameWindow::updateGame);
 }
+
 void GameWindow::getNextRoom(){}
+
 GameWindow::~GameWindow() {
     m_gameTimer.stop();
 
@@ -40,6 +42,9 @@ void GameWindow::stopGame(){
 
 }
 void GameWindow::initializeGame() {
+    m_gameTimer.stop();
+    for (Enemy* enemy : m_enemies) disconnect(enemy);
+
     for (Gate* gate : m_gates) delete gate;
     m_gates.clear();
 
@@ -266,16 +271,28 @@ void GameWindow::keyPressEvent(QKeyEvent *event) {
     if (m_gameOver) {
         if (event->key() == Qt::Key_R) {
             m_gameOver = false;
+
+            // Stop all timers
+            m_gameTimer.stop();
+
+            // Disconnect all signals from enemies
+            for (Enemy* enemy : m_enemies) {
+                disconnect(enemy);
+            }
+
+            // Initialize game
             initializeGame();
+
+            // Start timer after initialization
             m_gameTimer.start();
-            // --- Resize Workaround ---
+
+            // Resize workaround
             QSize orig = size();
             resize(orig.width(), orig.height() + 1);
             resize(orig);
-            // -------------------------
+
             update();
         }
-
         return;
     }
 
@@ -448,17 +465,26 @@ void GameWindow::updateGame() {
     QRectF playerBox = m_player->boundingRect().translated(m_player->pos());
     QRectF transitionBox = transition->boundingRect();
     if(transitionBox.intersects(playerBox)){
-        getNextRoom();
+        // Stop timers before transitioning
         m_gameTimer.stop();
-        initializeGame();
-        m_gameTimer.start();
-        // --- Resize Workaround ---
-        QSize orig = size();
-        resize(orig.width(), orig.height() + 1);
-        resize(orig);
-        // -------------------------
-        update();
+
+        // Call getNextRoom which will handle the transition
+        getNextRoom();
+
+        // Only initialize if we're not transitioning to a new level
+        if (isVisible()) {
+            initializeGame();
+            m_gameTimer.start();
+
+            // Resize workaround
+            QSize orig = size();
+            resize(orig.width(), orig.height() + 1);
+            resize(orig);
+
+            update();
+        }
     }
+
     // --- Player attack Logic ---
     if (m_player->isAttacking()) {
         QRectF playerHit = m_player->hitRegion();

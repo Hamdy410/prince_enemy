@@ -67,6 +67,8 @@ protected:
     virtual void getNextRoom();
     void connectPressureTileToGate(int pressureTileIndex, int gateIndex);
 
+    QTimer m_gameTimer;
+
 private slots:
     void updateGame();
     void toggleDebugMode() { m_debugMode = !m_debugMode; update(); }
@@ -76,7 +78,6 @@ private:
     QString stateToString(Enemy::State state) const;
 
     QList<Enemy*> m_enemies;
-    QTimer m_gameTimer;
     bool m_debugMode;
     int m_frameCounter;
     int m_fps;
