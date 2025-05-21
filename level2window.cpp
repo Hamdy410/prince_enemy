@@ -25,7 +25,6 @@ void Level2Window::createTilesandWallsandCeiling() {
     for(ceiling* c: m_ceilings) delete c;
     m_ceilings.clear();
 
-
     switch (m_currentRoom) {
     case ROOM_ONE:
         setFundementals(0, 0, 4, 282, ":/images/lvl2-scn1-back.png", ":/images/lvl2-scn1-fore.png",240, 212);
@@ -53,7 +52,7 @@ void Level2Window::createTilesandWallsandCeiling() {
         createRoom6();
         break;
     case ROOM_SEVEN:
-        setFundementals(0, 0, 4, 246, ":/images/lvl2-scn7-back.png", ":/images/lvl2-scn7-fore.png");
+        setFundementals(258, 171,114,144, ":/images/lvl2-scn7-back.png", ":/images/lvl2-scn7-fore.png");
         createRoom7();
     }
 
@@ -200,7 +199,7 @@ void Level2Window::createRoom5(){
     m_ceilings.append(ceiling1);
 }
 void Level2Window::createRoom6(){
-    QList<tile*> platform1 = createTiles(12, 276, 10, 60, 5,false,0,QList<int>(),QList<int>{1});  // (11,123,288) → (22-10,246,576+20)
+    QList<tile*> platform1 = createTiles(12, 276, 10, 60, 5,true,0,QList<int>(),QList<int>{1});  // (11,123,288) → (22-10,246,576+20)
     m_tiles.append(platform1);
 
     QList<tile*> platform2 = createTiles(-10, 118, 1, 60, 5,false,0,QList<int>(),QList<int>(),QList<int>{0});  // (0,59,11) → (0-10,118,22+20)

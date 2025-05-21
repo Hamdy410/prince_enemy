@@ -44,6 +44,20 @@
         <file>lvl2-scn6-fore.png</file>
         <file>lvl2-scn7-back.png</file>
         <file>lvl2-scn7-fore.png</file>
+        <file>lvl3-scn1-back.png</file>
+        <file>lvl3-scn1-fore.png</file>
+        <file>lvl3-scn2-back.png</file>
+        <file>lvl3-scn2-fore.png</file>
+        <file>lvl3-scn3-back.png</file>
+        <file>lvl3-scn3-fore.png</file>
+        <file>lvl3-scn4-back.png</file>
+        <file>lvl3-scn4-fore.png</file>
+        <file>lvl3-scn5-back.png</file>
+        <file>lvl3-scn5-fore.png</file>
+        <file>lvl3-scn6-back.png</file>
+        <file>lvl3-scn6-fore.png</file>
+        <file>lvl3-scn7-back.png</file>
+        <file>lvl3-scn7-fore.png</file>
     </qresource>
     <qresource prefix="/new/prefix1"/>
 </RCC>

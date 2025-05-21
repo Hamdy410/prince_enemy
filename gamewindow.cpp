@@ -148,7 +148,7 @@ void GameWindow::paintEvent(QPaintEvent *event) {
             p->draw(&painter);
             //painter.drawRect(p->boundingRect());
         }else{
-            if(false){
+            if(true){
         painter.save();
         painter.setPen(QPen(Qt::red, 2));
         painter.drawRect(t->boundingRect());
@@ -156,7 +156,7 @@ void GameWindow::paintEvent(QPaintEvent *event) {
             }
         }
     }
-    if(false){
+    if(true){
     painter.setPen(QPen(Qt::green, 10));
     painter.setBrush(QBrush(Qt::red));
     painter.drawRect(transition->boundingRect());
@@ -196,7 +196,7 @@ void GameWindow::paintEvent(QPaintEvent *event) {
         *Foreground = Foreground->scaled(640,480);
         painter.drawPixmap(0,0,*Foreground);
     }
-    if(false){
+    if(true){
     for (wall* w : m_walls) {
         painter.drawRect(w->boundingRect());
         if (m_debugMode) {
@@ -505,8 +505,8 @@ void GameWindow::updateGame() {
         QRectF playerRect = m_player->hurtRegion();
         QRectF spikeRect = spike->hitRegion();
 
-        if (playerRect.intersects(spikeRect))
-            spike->onCollide(m_player);
+        if (playerRect.intersects(spikeRect) && spike->complete())
+            m_gameOver = true;
     }
 
     update();

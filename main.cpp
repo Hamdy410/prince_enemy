@@ -4,6 +4,7 @@
 #include "tutorialpage.h"
 #include "level1window.h"
 #include "level2window.h"
+#include "level3window.h"
 #include "gamewindow.h"
 #include <QApplication>
 
@@ -11,11 +12,10 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
     qApp->processEvents(QEventLoop::AllEvents);
-    //Level1Window w;
-    //w.show();
-
+    Level3Window w;
+    w.show();
     // Create all pages
-    MenuPage menuPage("Prince of Persia");
+    /*MenuPage menuPage("Prince of Persia");
     StartPage* startPage = nullptr;
     TutorialPage* tutorialPage = nullptr;
     Level1Window* levelWindow = nullptr;
@@ -54,5 +54,6 @@ int main(int argc, char *argv[])
 
     // Show menu page
     menuPage.show();
+*/
     return a.exec();
 }

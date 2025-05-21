@@ -23,7 +23,7 @@ public:
     void Update(player* player) override;
     void onCollide(player* player) override;
     void Activate() override;
-
+    bool complete(){return m_currentstate==Fullyout;}
     void checkPlayerDistance(player* player);
     void setActivationDistance(float distance);
     void loadSpriteSheet();
