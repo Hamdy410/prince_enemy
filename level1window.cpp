@@ -359,3 +359,23 @@ void Level1Window::getNextRoom(){
         newWindow->show();
     }
 }
+void Level1Window::getCurrentRoom(){
+    if(m_currentRoom==ROOM_ONE){
+        m_currentRoom=ROOM_ONE;
+    }else if(m_currentRoom == ROOM_TWO){
+        m_currentRoom=ROOM_TWO;
+    }else if(m_currentRoom == ROOM_THREE){
+        m_currentRoom=ROOM_THREE;
+    }else if(m_currentRoom == ROOM_FOUR){
+        m_currentRoom=ROOM_FOUR;
+    }else if(m_currentRoom == ROOM_FIVE){
+        m_currentRoom=ROOM_FIVE;
+    }else if(m_currentRoom == ROOM_SIX){
+        m_currentRoom=ROOM_SIX;
+    }else if(m_currentRoom == ROOM_SEVEN){
+        m_currentRoom=ROOM_SEVEN;
+    }else if(m_currentRoom==ROOM_EIGHT){
+        m_currentRoom=ROOM_EIGHT;
+    }
+}
+

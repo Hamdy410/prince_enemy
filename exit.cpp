@@ -4,6 +4,12 @@ Exit::Exit(int x, int y)
     : Gate(QPointF(x, y))
     , is_activated(false)
 {
+    QPixmap spritesheet(":/images/exit.jpeg");
+    int frameWidth = spritesheet.width() / 16;
+    int frameHeight = spritesheet.height();
+    QPixmap frame = spritesheet.copy(0, 0, frameWidth, frameHeight);
+    frame = frame.scaled(114,144);
+    setPixmap(frame);
     loadAnimationFrames();
 }
 

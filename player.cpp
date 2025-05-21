@@ -3,7 +3,7 @@
 #include "health.h"
 #include "score.h"
 #include "pressuretile.h"
-
+#include "exit.h"
 #include <QTransform>
 #include <QPainter>
 #include <QPixmap>
@@ -467,6 +467,7 @@ void player::checkCollisions(const QList<tile*> &tiles, const QList<Gate*>& gate
     QRectF playerBox = boundingRect().translated(m_x, m_y + sinkOffset);
     //check for gates
     for (Gate* g: gates) {
+        if(!(dynamic_cast<Exit*>(g))){
         QRectF gateBox = g->boundingRect().translated(g->pos().x(), g->pos().y());
         if (playerBox.intersects(gateBox) && !g->isOpen()) {
             if(playerBox.right()>=((gateBox.left()+gateBox.right())/2+20) && (statue==StillRight || statue==WalkRight || statue==HopRight || statue==JumpRight)){
@@ -474,6 +475,7 @@ void player::checkCollisions(const QList<tile*> &tiles, const QList<Gate*>& gate
             }else if(playerBox.left()>=((gateBox.left()+gateBox.right())/2-20) && (statue==StillLeft || statue==WalkLeft || statue==HopLeft || statue==JumpLeft)){
                 m_x = gateBox.right()-16;
             }
+        }
         }
     }
     for (wall* w: walls) {

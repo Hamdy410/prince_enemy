@@ -65,6 +65,7 @@ protected:
     player *m_player;
     int total_health;
     virtual void getNextRoom();
+    virtual void getCurrentRoom(){}
     void connectPressureTileToGate(int pressureTileIndex, int gateIndex);
 
     QTimer m_gameTimer;

@@ -19,6 +19,7 @@ SOURCES += \
     health.cpp \
     level1window.cpp \
     level2window.cpp \
+    level3window.cpp \
     loosetile.cpp \
     main.cpp \
     mainwindow.cpp \
@@ -47,6 +48,7 @@ HEADERS += \
     health.h \
     level1window.h \
     level2window.h \
+    level3window.h \
     loosetile.h \
     mainwindow.h \
     menupage.h \

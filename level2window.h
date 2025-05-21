@@ -22,6 +22,7 @@ protected:
     void createRoom6();
     void createRoom7();
     void getNextRoom() override;
+    void getCurrentRoom() override;
     void changeRoom(Room newRoom);
 
 private:

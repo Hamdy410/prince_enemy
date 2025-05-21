@@ -25,10 +25,8 @@ protected:
     void createRoom7();
     void createRoom8();
     void getNextRoom() override;
+    void getCurrentRoom() override;
     void changeRoom(Room newRoom);
-
-signals:
-    void Level2Requested();
 
 private:
     Room m_currentRoom;
