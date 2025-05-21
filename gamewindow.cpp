@@ -508,7 +508,12 @@ void GameWindow::updateGame() {
         if (playerRect.intersects(spikeRect) && spike->complete())
             m_gameOver = true;
     }
-
+    for(Chopper* c : m_choppers){
+        QRectF chopperBox  = QRectF(c->pos().x()+10,c->pos().y(),c->boundingRect().width()-10,c->boundingRect().height());
+        if(chopperBox.intersects(playerBox) && !(c->complete())){
+            m_gameOver = true;
+        }
+    }
     update();
 }
 

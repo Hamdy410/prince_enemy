@@ -40,8 +40,12 @@ void Level3Window::createTilesandWallsandCeiling() {
         createRoom3();
         break;
     case ROOM_FOUR:
-        setFundementals(0, 150, 4, 130, ":/images/lvl3-scn3-back.png", ":/images/lvl3-scn3-fore.png");
+        setFundementals(0, 134, 4, 134, ":/images/lvl3-scn4-back.png", ":/images/lvl3-scn4-fore.png");
         createRoom4();
+        break;
+    case ROOM_FIVE:
+        setFundementals(66, 104, 114, 144, ":/images/lvl3-scn7-back.png", ":/images/lvl3-scn7-fore.png");
+        createRoom5();
     }
 
 }
@@ -116,40 +120,77 @@ void Level3Window::createRoom3() {
 
 }
 void Level3Window::createRoom4(){
-    // Platforms (scaled floors)
-    /*
-    QList<tile*> platform1 = createTiles(516, 135, 1, 124, 5);  // Original: 258,59,62,2
+    // Floors as platforms (x*2, y*2.288, width*2, height*2.288 approx)
+    QList<tile*> platform1 = createTiles(516, 135, 1, 142, 5);  // floor (258,59,62,2)
     m_tiles.append(platform1);
 
-    QList<tile*> platform2 = createTiles(406, 135, 1, 66, 5);   // Original: 203,59,33,2
+    QList<tile*> platform2 = createTiles(406, 135, 1, 76, 5,false,0);   // floor (203,59,33,2)
     m_tiles.append(platform2);
 
-    QList<tile*> platform3 = createTiles(0, 282, 1, 320, 5);    // Original: 0,123,160,2
+
+    QList<tile*> platform3 = createTiles(0, 282, 5, 74, 5,false,0,QList<int>(),QList<int>{4},QList<int>{1},QList<int>{3});    // floor (0,123,160,2)
     m_tiles.append(platform3);
 
-    QList<tile*> platform4 = createTiles(342, 429, 1, 64, 5);   // Original: 171,187,32,2
-    m_tiles.append(platform4);
+    connectPressureTileToGate(6,0);
+    // Spikes (death) as tile
+    QList<tile*> spikes1 = createTiles(472, 135, 1, 50, 5,false,0,QList<int>{0});     // death (236,59,22,2)
+    m_tiles.append(spikes1);
 
-    // Walls (scaled and typed)
-    QList<wall*> walls1 = createWalls(146, 2, 4, 147, false);  // Left wall (73,1,2,64)
+    // Walls (x*2, y*2.288, width*2, height*2.288)
+    QList<wall*> walls1 = createWalls(146, 2, 4, 147, true);   // left_wall (73,1,2,64)
     m_walls.append(walls1);
 
-    QList<wall*> walls2 = createWalls(242, 397, 4, 142, false); // Left wall (121,173,2,62)
+    QList<wall*> walls2 = createWalls(636, 2, 4, 147, true);    // right_wall (318,1,2,64)
     m_walls.append(walls2);
 
-    QList<wall*> walls3 = createWalls(342, 433, 4, 284, true);  // Right wall (171,189,2,124)
-    m_walls.append(walls3);
 
-    QList<wall*> walls4 = createWalls(636, 2, 4, 147, true);    // Right wall (318,1,2,64)
-    m_walls.append(walls4);
-
-    // Adjusted ceilings
-    QList<ceiling*> ceilings1 = createCeiling(-10, 159, 160, -5);  // Original: 0,65,70,2
+    // Ceilings with adjustments:
+    // Original ceiling: (0,65,70,2)
+    // Adjusted ceiling: x-10= -10, y+10=75, width+20=90, height-10=-8 (approximate)
+    QList<ceiling*> ceilings1 = createCeiling(-10, 149, 90, -8);   // ceiling (0,65,70,2) scaled and adjusted
     m_ceilings.append(ceilings1);
 
-    QList<ceiling*> ceilings2 = createCeiling(310, 12, 340, -5);   // Original: 160,1,160,2
+    // Original ceiling: (160,1,160,2)
+    // Adjusted ceiling: x-10=150, y+10=23, width+20=180, height-10=-8 (approximate)
+    QList<ceiling*> ceilings2 = createCeiling(310, 23, 180, -8);   // ceiling (160,1,160,2) scaled and adjusted
     m_ceilings.append(ceilings2);
-    */
+
+}
+void Level3Window::createRoom5(){
+    // Platforms (floors)
+    QList<tile*> platform1 = createTiles(588, 276, 1, 42, 5);  // (299,123,21)
+    m_tiles.append(platform1);
+
+    QList<tile*> platform2 = createTiles(350, 434, 1, 424, 5);  // (139,187,192)
+    m_tiles.append(platform2);
+
+    QList<tile*> platform3 = createTiles(0, 276, 7, 61, 5,false,0,QList<int>(),QList<int>{6});  // (0,123,203)
+    m_tiles.append(platform3);
+
+    QList<tile*> platform4 = createTiles(194, 148, 1, 158, 5);  // (107,59,64)
+    m_tiles.append(platform4);
+
+    // Ceilings
+    QList<ceiling*> ceiling1 = createCeiling(0, 32, 640, 4);  // (0,1,320)
+    m_ceilings.append(ceiling1);
+
+    QList<ceiling*> ceiling2 = createCeiling(210, 170, 124, 4);  // (105,65,62)
+    m_ceilings.append(ceiling2);
+
+    QList<ceiling*> ceiling3 = createCeiling(256, 288, 144, 4);  // (128,129,72)
+    m_ceilings.append(ceiling3);
+
+    QList<ceiling*> ceiling4 = createCeiling(594, 288, 46, 4);  // (297,129,23)
+    m_ceilings.append(ceiling4);
+
+    // Exit
+    addExit(66,170);
+    connectPressureTileToGate(8,0);
+
+    // Wall
+    QList<wall*> wall1 = createWalls(0, 40, 4, 370, false);  // (0,0,2,190)
+    m_walls.append(wall1);
+
 }
 void Level3Window::getNextRoom(){
     if(m_currentRoom==ROOM_ONE){
@@ -161,11 +202,6 @@ void Level3Window::getNextRoom(){
     }else if(m_currentRoom == ROOM_FOUR){
         m_currentRoom=ROOM_FIVE;
     }else if(m_currentRoom == ROOM_FIVE){
-        m_currentRoom=ROOM_SIX;
-    }else if(m_currentRoom == ROOM_SIX){
-        m_currentRoom=ROOM_SEVEN;
-    }else if(m_currentRoom == ROOM_SEVEN){
-
     }
 }
 void Level3Window::getCurrentRoom(){
@@ -179,9 +215,5 @@ void Level3Window::getCurrentRoom(){
         m_currentRoom=ROOM_FOUR;
     }else if(m_currentRoom == ROOM_FIVE){
         m_currentRoom=ROOM_FIVE;
-    }else if(m_currentRoom == ROOM_SIX){
-        m_currentRoom=ROOM_SIX;
-    }else if(m_currentRoom == ROOM_SEVEN){
-        m_currentRoom=ROOM_SEVEN;
     }
 }

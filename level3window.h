@@ -8,7 +8,7 @@ class Level3Window : public GameWindow
 public:
     explicit Level3Window(QWidget* parent = nullptr);
     enum Room {
-        ROOM_ONE, ROOM_TWO, ROOM_THREE, ROOM_FOUR,ROOM_FIVE,ROOM_SIX,ROOM_SEVEN
+        ROOM_ONE, ROOM_TWO, ROOM_THREE, ROOM_FOUR,ROOM_FIVE
     };
 
 protected:
@@ -19,8 +19,6 @@ protected:
     void createRoom3();
     void createRoom4();
     void createRoom5();
-    void createRoom6();
-    void createRoom7();
     void getNextRoom() override;
     void getCurrentRoom() override;
     void changeRoom(Room newRoom);

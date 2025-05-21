@@ -491,12 +491,7 @@ void player::checkCollisions(const QList<tile*> &tiles, const QList<Gate*>& gate
             }
         }
     }
-    for(Chopper* c : choppers){
-        QRectF chopperBox  = QRectF(c->pos().x()+10,c->pos().y(),c->boundingRect().width()-10,c->boundingRect().height());
-        if(chopperBox.intersects(playerBox)){
-            c->onCollide(this);
-        }
-    }
+
     // 1. Check for landing on top of a tile
     for (tile* t: tiles) {
         QRectF tileBox = t->boundingRect();

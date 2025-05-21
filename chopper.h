@@ -19,6 +19,7 @@ public:
     void onCollide(player* player) override;
     State getState() const { return m_state; }
     void render(QPainter *painter);
+    bool complete(){return m_state==Open;}
 
 private slots:
     void advanceState();
