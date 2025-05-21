@@ -354,9 +354,9 @@ void Level1Window::getNextRoom(){
     }else if(m_currentRoom == ROOM_SEVEN){
         m_currentRoom=ROOM_EIGHT;
     }else if(m_currentRoom==ROOM_EIGHT){
+        m_gameTimer.stop();
         this->hide();
-        Level2Window* newWindow = new Level2Window(this);
-        newWindow->show();
+        emit Level2Requested();
     }
 }
 void Level1Window::getCurrentRoom(){

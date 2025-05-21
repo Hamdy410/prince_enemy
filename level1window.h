@@ -28,6 +28,9 @@ protected:
     void getCurrentRoom() override;
     void changeRoom(Room newRoom);
 
+signals:
+    void Level2Requested();
+
 private:
     Room m_currentRoom;
 };
