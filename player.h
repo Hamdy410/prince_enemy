@@ -1,6 +1,9 @@
+// This class defines the main Player character in the game.
+// It handles movement, jumping, crouching, attacking, animation, health, score,
+// and interactions with various game elements like tiles, gates, enemies, and obstacles.
+
 #ifndef PLAYER_H
 #define PLAYER_H
-
 #include <QObject>
 #include <QPixmap>
 #include <QRectF>
@@ -17,6 +20,7 @@
 class tile;
 class Enemy;
 
+// Enum for defining different movement states of the player
 enum movement {
     StillRight, StillLeft, WalkRight, WalkLeft,
     JumpRight, JumpLeft, HopRight, HopLeft, AttackLeft,
@@ -27,17 +31,26 @@ class player : public QObject {
     Q_OBJECT
 
 public:
+     // Constructor and Destructor
     player(bool right = true, int health=15, int score =0,QObject* parent = nullptr);
     ~player();
+
+    // Handle key press and release for controlling player
     void handleKeyPress(QKeyEvent* event);
     void handleKeyRelease(QKeyEvent* event);
+
+    // Update player state including movement and collisions
     void update(const QList<tile*>& tiles, const QList<Gate*>& gates,const QList<Chopper*>& choppers,const QList<wall*>& walls,const QList<ceiling*>& ceilings);
+
+     // Draw the player on the screen
     void draw(QPainter* painter);
+
+    // Get player's bounding rectangle for collision detection
     QRectF boundingRect() const;
     QPointF pos() const;
     void setPos(qreal x, qreal y);
-    // int Score() const { return m_score.value; }
-    // int Health() const { return m_health.value; }
+
+    // Set the Y-coordinate of the ground for jumping/falling logic
     void setGround(qreal groundY);
 
     // Animation Movement dynamics
@@ -50,6 +63,7 @@ public:
     QRectF feetRegion() const;
     bool isAttacking(){ return is_attacking; }
     QSet<Enemy*>& enemiesHitThisAttack() { return m_enemiesHitThisAttack; }
+
     // Health and Score representations:
     Health* healthBar() const { return m_healthBar; }
     Score* scoreBar() const { return m_scoreBar; }
@@ -57,9 +71,6 @@ public:
 
 private:
     void checkCollisions(const QList<tile*>& tiles, const QList<Gate*>& gates,const QList<Chopper*>& choppers,const QList<wall*>& walls,const QList<ceiling*>& ceilings);
-
-    // score m_score;
-    // health m_health;
 
     int m_health = 100;
     Animation* player_anim;
