@@ -22,6 +22,7 @@
 #include "ceiling.h"
 #include "transition.h"
 #include "exit.h"
+#include "coin.h"
 class GameWindow : public QMainWindow
 {
     Q_OBJECT
@@ -51,7 +52,7 @@ protected:
                               bool createEnemy = false, int overlap=10,
                               const QList<int>& spikeIndices = QList<int>(),
                               const QList<int>& pressureIndices = QList<int>(),
-                              const QList<int>& gateIndices = QList<int>(), const QList<int>& choppersIndices = QList<int>());
+                              const QList<int>& gateIndices = QList<int>(), const QList<int>& choppersIndices = QList<int>(), const QList<int>& coinIndices = QList<int>());
     void addExit(int x, int y);
     QList<wall*> createWalls(int startX, int y,int width, int height, bool right);
     QList<ceiling*>createCeiling(int startX, int y,int width, int height);
@@ -62,6 +63,7 @@ protected:
     QList<wall*>m_walls;
     QList<ceiling*>m_ceilings;
     QMap<int, int> m_tileToGateMap;
+    QList<Coin*> m_coins;
     player *m_player;
     int total_health;
     int total_score;

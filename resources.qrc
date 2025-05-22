@@ -70,6 +70,8 @@
         <file>lvl4-scn5-fore.png</file>
         <file>lvl4-scn6-back.png</file>
         <file>lvl4-scn6-fore.png</file>
+        <file>coins.png</file>
+        <file>mcoins.jpg</file>
     </qresource>
     <qresource prefix="/new/prefix1"/>
     <qresource prefix="/">

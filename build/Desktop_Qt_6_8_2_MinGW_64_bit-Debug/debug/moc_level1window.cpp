@@ -37,9 +37,7 @@ struct qt_meta_tag_ZN12Level1WindowE_t {};
 
 #ifdef QT_MOC_HAS_STRINGDATA
 static constexpr auto qt_meta_stringdata_ZN12Level1WindowE = QtMocHelpers::stringData(
-    "Level1Window",
-    "Level2Requested",
-    ""
+    "Level1Window"
 );
 #else  // !QT_MOC_HAS_STRINGDATA
 #error "qtmochelpers.h not found or too old."
@@ -51,18 +49,12 @@ Q_CONSTINIT static const uint qt_meta_data_ZN12Level1WindowE[] = {
       12,       // revision
        0,       // classname
        0,    0, // classinfo
-       1,   14, // methods
+       0,    0, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
        0,       // flags
-       1,       // signalCount
-
- // signals: name, argc, parameters, tag, flags, initial metatype offsets
-       1,    0,   20,    2, 0x06,    1 /* Public */,
-
- // signals: parameters
-    QMetaType::Void,
+       0,       // signalCount
 
        0        // eod
 };
@@ -75,9 +67,7 @@ Q_CONSTINIT const QMetaObject Level1Window::staticMetaObject = { {
     nullptr,
     qt_incomplete_metaTypeArray<qt_meta_tag_ZN12Level1WindowE_t,
         // Q_OBJECT / Q_GADGET
-        QtPrivate::TypeAndForceComplete<Level1Window, std::true_type>,
-        // method 'Level2Requested'
-        QtPrivate::TypeAndForceComplete<void, std::false_type>
+        QtPrivate::TypeAndForceComplete<Level1Window, std::true_type>
     >,
     nullptr
 } };
@@ -85,22 +75,10 @@ Q_CONSTINIT const QMetaObject Level1Window::staticMetaObject = { {
 void Level1Window::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
 {
     auto *_t = static_cast<Level1Window *>(_o);
-    if (_c == QMetaObject::InvokeMetaMethod) {
-        switch (_id) {
-        case 0: _t->Level2Requested(); break;
-        default: ;
-        }
-    }
-    if (_c == QMetaObject::IndexOfMethod) {
-        int *result = reinterpret_cast<int *>(_a[0]);
-        {
-            using _q_method_type = void (Level1Window::*)();
-            if (_q_method_type _q_method = &Level1Window::Level2Requested; *reinterpret_cast<_q_method_type *>(_a[1]) == _q_method) {
-                *result = 0;
-                return;
-            }
-        }
-    }
+    (void)_t;
+    (void)_c;
+    (void)_id;
+    (void)_a;
 }
 
 const QMetaObject *Level1Window::metaObject() const
@@ -119,24 +97,6 @@ void *Level1Window::qt_metacast(const char *_clname)
 int Level1Window::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 {
     _id = GameWindow::qt_metacall(_c, _id, _a);
-    if (_id < 0)
-        return _id;
-    if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 1)
-            qt_static_metacall(this, _c, _id, _a);
-        _id -= 1;
-    }
-    if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 1)
-            *reinterpret_cast<QMetaType *>(_a[0]) = QMetaType();
-        _id -= 1;
-    }
     return _id;
-}
-
-// SIGNAL 0
-void Level1Window::Level2Requested()
-{
-    QMetaObject::activate(this, &staticMetaObject, 0, nullptr);
 }
 QT_WARNING_POP

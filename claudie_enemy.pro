@@ -12,6 +12,7 @@ SOURCES += \
     animation.cpp \
     ceiling.cpp \
     chopper.cpp \
+    coin.cpp \
     enemy.cpp \
     exit.cpp \
     gamewindow.cpp \
@@ -43,6 +44,7 @@ HEADERS += \
     animation.h \
     ceiling.h \
     chopper.h \
+    coin.h \
     enemy.h \
     exit.h \
     gamewindow.h \
