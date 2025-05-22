@@ -5,6 +5,8 @@
 #include "level1window.h"
 #include "level2window.h"
 #include "level3window.h"
+#include "level4window.h"
+#include "level5window.h"
 #include "gamewindow.h"
 #include <QApplication>
 
@@ -12,7 +14,7 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
     qApp->processEvents(QEventLoop::AllEvents);
-    Level3Window w;
+    Level5Window w;
     w.show();
     /*
     // Create all pages

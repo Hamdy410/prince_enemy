@@ -20,6 +20,8 @@ SOURCES += \
     level1window.cpp \
     level2window.cpp \
     level3window.cpp \
+    level4window.cpp \
+    level5window.cpp \
     loosetile.cpp \
     main.cpp \
     mainwindow.cpp \
@@ -49,6 +51,8 @@ HEADERS += \
     level1window.h \
     level2window.h \
     level3window.h \
+    level4window.h \
+    level5window.h \
     loosetile.h \
     mainwindow.h \
     menupage.h \

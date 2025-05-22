@@ -1,7 +1,7 @@
 #include "gamewindow.h"
 #include "level3window.h"
 #include "tile.h"
-
+#include "level4window.h"
 Level3Window::Level3Window(QWidget* parent) : GameWindow(parent)
 {
     setWindowTitle("Level 3");
@@ -202,6 +202,9 @@ void Level3Window::getNextRoom(){
     }else if(m_currentRoom == ROOM_FOUR){
         m_currentRoom=ROOM_FIVE;
     }else if(m_currentRoom == ROOM_FIVE){
+        Level4Window* newWind = new Level4Window(this);
+        newWind->show();
+        this->hide();
     }
 }
 void Level3Window::getCurrentRoom(){
