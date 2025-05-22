@@ -1,3 +1,6 @@
+/*
+  A rising spike trap that animates through multiple danger levels and damages the player on contact.
+ */
 #ifndef SPIKES_H
 #define SPIKES_H
 #include "obstacle.h"
@@ -20,11 +23,19 @@ public:
     Q_ENUM(State)
     Spikes(const QPointF& pos);
     ~Spikes() override;
+    // Called every frame to update the spike's state
     void Update(player* player) override;
+
+    // Handles player collision logic.
     void onCollide(player* player) override;
+
+    // Triggers activation behavior (e.g., rise-up animation).
     void Activate() override;
+
+    // Returns true if spikes are fully out.
     bool complete(){return m_currentstate==Fullyout;}
     void checkPlayerDistance(player* player);
+    // Sets the distance within which spikes activate.
     void setActivationDistance(float distance);
     void loadSpriteSheet();
     void changeState(State newstate);

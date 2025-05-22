@@ -4,6 +4,7 @@ debug/chopper.o
 debug/coin.o
 debug/enemy.o
 debug/exit.o
+debug/gamemanager.o
 debug/gamewindow.o
 debug/gate.o
 debug/health.o
@@ -34,8 +35,13 @@ debug/moc_chopper.o
 debug/moc_coin.o
 debug/moc_enemy.o
 debug/moc_exit.o
+debug/moc_gamemanager.o
 debug/moc_gamewindow.o
 debug/moc_level1window.o
+debug/moc_level2window.o
+debug/moc_level3window.o
+debug/moc_level4window.o
+debug/moc_level5window.o
 debug/moc_loosetile.o
 debug/moc_mainwindow.o
 debug/moc_menupage.o

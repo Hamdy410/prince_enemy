@@ -4,6 +4,7 @@ release/chopper.o
 release/coin.o
 release/enemy.o
 release/exit.o
+release/gamemanager.o
 release/gamewindow.o
 release/gate.o
 release/health.o
@@ -34,8 +35,13 @@ release/moc_chopper.o
 release/moc_coin.o
 release/moc_enemy.o
 release/moc_exit.o
+release/moc_gamemanager.o
 release/moc_gamewindow.o
 release/moc_level1window.o
+release/moc_level2window.o
+release/moc_level3window.o
+release/moc_level4window.o
+release/moc_level5window.o
 release/moc_loosetile.o
 release/moc_mainwindow.o
 release/moc_menupage.o

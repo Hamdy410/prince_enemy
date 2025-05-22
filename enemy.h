@@ -1,8 +1,44 @@
 /*
  * Author: Hamdy El-Madbouly
  * Start Date: 17 April, 2025
- * End Date:
- * Description:
+ * End Date:   20 April, 2025
+ * Description: Enemy Characters
+ * 
+ * This class implements an animated enemy character with state-based behavior.
+ * The Enemy class handles its own movement, animation, collision detection and
+ * interaction wit the player and environment.
+ * 
+ * States include: walking, attacking, and dying with appropriate animations for
+ * each state.
+ * 
+ * Features:
+ *      - Patrol Behavior with edge detction to prevent falling
+ *      - Attack system with cooldown management
+ *      - Automatic sprite flipping based on movement direction
+ *      
+ * Usage:
+ *      1. Create an Enemy instance
+ *      2. Initialize with a spritesheet containing animation frames.
+ *      3. Set position, movement speed, and other properties
+ *      4. Connect to signals for state changes and death events.
+ *      5. Call update() in your game loop to handle movement and state changes
+ *      6. Call render() to draw the enemy or use as a QGraphicsItem
+ *      
+ * Animation Requirements:
+ *      - Row 0: Walking animation (7 frames)
+ *      - Row 1: Attack animation (4 frames)
+ *      - Row 2: Death animation (5 frames)
+ *      
+ * State Transitions:
+ *      - Walking states can be interrupted by any other state
+ *      - Attack states can only be interrupted by movements states
+ *      - Death states cannot be interrupted (enemy remains dead)
+ *      
+ * Collision System:
+ *      - Hit Region: Area in front of the enemy that can damage the player
+ *      - Hurt Region: Area where the enemy can be damaged by the player
+ *      - Tile detection: Used for edge detection during patrol b
+ * 
  */
 
 #ifndef ENEMY_H
