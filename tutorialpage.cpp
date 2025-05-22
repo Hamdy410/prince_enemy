@@ -21,7 +21,7 @@ TutorialPage::TutorialPage(QWidget* parent)
                    << "→ Right Arrow: Move right"
                    << "← Left Arrow: Move left"
                    << "↑ Up Arrow: Jump"
-                   << "↓ Down Arrow: Crouch"
+                   << "↓ Down Arrow: Crouch (avoid Enemy Attacks)"
                    << "Space: Hop"
                    << "Z: Attack"
                    << ""
@@ -29,7 +29,8 @@ TutorialPage::TutorialPage(QWidget* parent)
                    << "- Watch your health bar"
                    << "- Avoid falling from great heights"
                    << "- Use pressure tiles to activate gates"
-                   << "- Time your jumps carefully";
+                   << "- Time your jumps carefully"
+                   <<"If you gained 60 points from killing enemies, the health becomes full";
 }
 
 TutorialPage::~TutorialPage()

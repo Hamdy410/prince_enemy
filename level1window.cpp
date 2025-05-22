@@ -6,7 +6,7 @@
 Level1Window::Level1Window(QWidget* parent, int healthVal, int scoreVal) : GameWindow(parent,healthVal,scoreVal)
 {
     setWindowTitle("Level 1");
-    m_currentRoom = ROOM_SEVEN;
+    m_currentRoom = ROOM_ONE;
     initializeGame();
 }
 

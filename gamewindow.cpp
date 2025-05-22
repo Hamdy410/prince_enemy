@@ -3,13 +3,13 @@
 #include "health.h"
 #include "spikes.h"
 #include "pressuretile.h"
-
+#include<QMessageBox>
 #include <QPainter>
 #include <QKeyEvent>
 #include <QDebug>
 
 GameWindow::GameWindow(QWidget *parent, int healthVal, int scoreVal) : QMainWindow(parent), m_debugMode(false),
-    m_frameCounter(0), m_fps(0)
+    m_frameCounter(0), m_fps(0),exit(NULL)
 {
     setWindowTitle("Enemy Game");
     resize(640, 463);
@@ -473,23 +473,25 @@ void GameWindow::updateGame() {
     QRectF playerBox = m_player->boundingRect().translated(m_player->pos());
     QRectF transitionBox = transition->boundingRect();
     if(transitionBox.intersects(playerBox)){
-        // Stop timers before transitioning
-        m_gameTimer.stop();
+        if(!(exit && !(exit->isOpen()))){
+            // Stop timers before transitioning
+            m_gameTimer.stop();
 
-        // Call getNextRoom which will handle the transition
-        getNextRoom();
+            // Call getNextRoom which will handle the transition
+            getNextRoom();
 
-        // Only initialize if we're not transitioning to a new level
-        if (isVisible()) {
-            initializeGame();
-            m_gameTimer.start();
+            // Only initialize if we're not transitioning to a new level
+            if (isVisible()) {
+                initializeGame();
+                m_gameTimer.start();
 
-            // Resize workaround
-            QSize orig = size();
-            resize(orig.width(), orig.height() + 1);
-            resize(orig);
+                // Resize workaround
+                QSize orig = size();
+                resize(orig.width(), orig.height() + 1);
+                resize(orig);
 
-            update();
+                update();
+            }
         }
     }
 
@@ -574,7 +576,9 @@ QList<ceiling*> GameWindow::createCeiling(int startX, int y,
     return ceilingsList;
 }
 void GameWindow::addExit(int x, int y){
-    m_gates.append(new Exit(x,y));
+    exit = new Exit(x,y);
+    m_gates.append(exit);
+
 }
 QList<wall*> GameWindow::createWalls(int startX, int y,
                                       int tileWidth, int tileHeight, bool right) {

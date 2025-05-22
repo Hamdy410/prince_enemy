@@ -114,6 +114,10 @@ void Level5Window::createRoom3(){
     QList<tile*> platform3 = createTiles(160, 273, 1, 128, 5);      // floor (75,123,64)
     m_tiles.append(platform3);
 
+    addExit(194, 164);
+
+    connectPressureTileToGate(0,0);
+
     // Ceilings
     QList<ceiling*> ceilings1 = createCeiling(0, 1, 640, 2);        // ceiling (0,1,320)
     m_ceilings.append(ceilings1);
@@ -134,9 +138,6 @@ void Level5Window::createRoom3(){
     QList<wall*> walls5 = createWalls(406, 176, 4, 285, true);      // right_wall (203,68,2,124)
     m_walls.append(walls5);
 
-    addExit(194, 164);
-
-    connectPressureTileToGate(1,0);
 
 }
 void Level5Window::getNextRoom(){
@@ -146,6 +147,7 @@ void Level5Window::getNextRoom(){
         m_currentRoom=ROOM_THREE;
     }else if(m_currentRoom == ROOM_THREE){
         QMessageBox::information(this,"well done","you passed the game and met the princess");
+        delete this;
     }
 }
 void Level5Window::getCurrentRoom(){

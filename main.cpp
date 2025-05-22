@@ -14,9 +14,6 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
     qApp->processEvents(QEventLoop::AllEvents);
-    Level1Window w;
-    w.show();
-    /*
     // Create all pages
     MenuPage menuPage("Prince of Persia");
     StartPage* startPage = nullptr;
@@ -57,6 +54,5 @@ int main(int argc, char *argv[])
 
     // Show menu page
     menuPage.show();
-    */
     return a.exec();
 }

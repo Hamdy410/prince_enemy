@@ -199,7 +199,7 @@ void Level2Window::createRoom5(){
     m_ceilings.append(ceiling1);
 }
 void Level2Window::createRoom6(){
-    QList<tile*> platform1 = createTiles(12, 276, 10, 60, 5,true,0,QList<int>(),QList<int>{1});  // (11,123,288) → (22-10,246,576+20)
+    QList<tile*> platform1 = createTiles(12, 276, 10, 60, 5,false,0,QList<int>(),QList<int>{1});  // (11,123,288) → (22-10,246,576+20)
     m_tiles.append(platform1);
 
     QList<tile*> platform2 = createTiles(-10, 118, 1, 60, 5,false,0,QList<int>(),QList<int>(),QList<int>{0});  // (0,59,11) → (0-10,118,22+20)

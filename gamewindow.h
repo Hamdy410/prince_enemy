@@ -65,6 +65,7 @@ protected:
     player *m_player;
     int total_health;
     int total_score;
+    Exit* exit;
     virtual void getNextRoom();
     virtual void getCurrentRoom(){}
     void connectPressureTileToGate(int pressureTileIndex, int gateIndex);
