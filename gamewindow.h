@@ -22,13 +22,10 @@
 #include "ceiling.h"
 #include "transition.h"
 #include "exit.h"
-<<<<<<< HEAD
-
+\
 class GameManager;
 
-=======
 #include "coin.h"
->>>>>>> 0847b5d007be132d64e5cb930bdcba6b71ccad2b
 class GameWindow : public QMainWindow
 {
     Q_OBJECT

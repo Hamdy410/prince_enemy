@@ -68,6 +68,9 @@ void Level3Window::createRoom1() {
 
     QList<wall*> walls2 = createWalls(522, 36, 4, 256, true);    // right_wall (261,3,2,128)
     m_walls.append(walls2);
+
+    Coin* coin1 = new Coin(QPointF(30, 118),10);
+    m_coins.append(coin1);
 }
 void Level3Window::createRoom2() {
     QList<tile*> platform1 = createTiles(551, 135, 2, 42, 5,false,0,QList<int>(),QList<int>{0});   // (299,59,21)
@@ -94,6 +97,9 @@ void Level3Window::createRoom2() {
     // Ceilings (scaled)
     QList<ceiling*> ceilings1 = createCeiling(0, 2, 640, 4);     // ceiling (0,1,320)
     m_ceilings.append(ceilings1);
+
+    Coin* coin2 = new Coin(QPointF(268, 115),10);
+    m_coins.append(coin2);
 }
 void Level3Window::createRoom3() {
     QList<tile*> platform1 = createTiles(90, 282, 1, 582, 5,true);
@@ -118,7 +124,8 @@ void Level3Window::createRoom3() {
 
     QList<wall*> wall2 = createWalls(274, 12, 4, 137, true);
     m_walls.append(wall2);
-
+    Coin* coin3 = new Coin(QPointF(130, 262),10);
+    m_coins.append(coin3);
 }
 void Level3Window::createRoom4(){
     // Floors as platforms (x*2, y*2.288, width*2, height*2.288 approx)

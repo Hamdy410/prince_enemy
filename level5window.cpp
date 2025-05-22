@@ -147,6 +147,7 @@ void Level5Window::getNextRoom(){
         m_currentRoom=ROOM_THREE;
     }else if(m_currentRoom == ROOM_THREE){
         this->hide();
+        QMessageBox::information(this,"congrats","You met the princess");
         emit gameCompleted();
     }
 }

@@ -20,7 +20,7 @@ Coin::~Coin()
 void Coin::loadCoinImage()
 {
     // Try to load your coin image - REPLACE with your actual image path
-    m_coinImage = QPixmap(":/images/mcoins.jpg");
+    m_coinImage = QPixmap(":/images/coins.png");
 
     if (m_coinImage.isNull()) {
         // Fallback: Create a simple coin if image not found

@@ -114,10 +114,6 @@ void Level1Window::createRoom1() {
     Coin* coin1 = new Coin(QPointF(250, 100), 10);
     m_coins.append(coin1);
 
-
-
-
-
 }
 
 void Level1Window::createRoom2() {
@@ -145,6 +141,8 @@ void Level1Window::createRoom2() {
     QList<wall*> walls5 = createWalls(30, 159, 4, 128,false);
     m_walls.append(walls5);
 
+    Coin* coin2 = new Coin(QPointF(0, 110),10);
+    m_coins.append(coin2);
 
 
 }
@@ -166,8 +164,8 @@ void Level1Window::createRoom3() {
 
     connectPressureTileToGate(2,0);
 
-    //QList<tile*> platform3 = createTiles(290, 140,1, 116, 38,false,0,QList<int>(),QList<int>{1});
-    //m_tiles.append(platform3);
+    Coin* coin3 = new Coin(QPointF(278, 120),10);
+    m_coins.append(coin3);
 
 
 }
