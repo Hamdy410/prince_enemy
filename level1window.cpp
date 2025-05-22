@@ -3,6 +3,7 @@
 #include "tile.h"
 #include "level2window.h"
 #include<QMessageBox>
+#include "coin.h"
 Level1Window::Level1Window(QWidget* parent, int healthVal, int scoreVal) : GameWindow(parent,healthVal,scoreVal)
 {
     setWindowTitle("Level 1");
@@ -27,6 +28,9 @@ void Level1Window::createTilesandWallsandCeiling() {
 
     for(ceiling* c: m_ceilings) delete c;
     m_ceilings.clear();
+
+    for(Coin* coin: m_coins) delete coin;
+    m_coins.clear();
 
     switch (m_currentRoom) {
     case ROOM_ONE:
@@ -105,7 +109,15 @@ void Level1Window::createRoom1() {
     //m_tiles.append(platform3);
 
     // Connect pressure tile to gate
-    //connectPressureTileToGate(6, 0);
+    //connectPressureTileToGate(6, 0);if (m_currentRoom == ROOM_ONE) {
+    // Coin 1: Above platform2 (easy to reach)
+    Coin* coin1 = new Coin(QPointF(250, 100), 10);
+    m_coins.append(coin1);
+
+
+
+
+
 }
 
 void Level1Window::createRoom2() {
@@ -133,6 +145,8 @@ void Level1Window::createRoom2() {
     QList<wall*> walls5 = createWalls(30, 159, 4, 128,false);
     m_walls.append(walls5);
 
+
+
 }
 
 void Level1Window::createRoom3() {
@@ -148,6 +162,7 @@ void Level1Window::createRoom3() {
 
     QList<wall*> walls3 = createWalls(636, 7, 4, 152,true);
     m_walls.append(walls3);
+
 
     connectPressureTileToGate(2,0);
 

@@ -174,7 +174,16 @@ void GameWindow::paintEvent(QPaintEvent *event) {
     for (Enemy* enemy : m_enemies) {
         enemy->render(&painter);
     }
+    //Draw coins
+    for (Coin* coin : m_coins) {
+        coin->render(&painter);
 
+        if (m_debugMode) {
+            painter.setPen(QPen(Qt::yellow, 2));
+            painter.setBrush(Qt::transparent);
+            painter.drawRect(coin->collisionRect());
+        }
+    }
     // Draw gates
     for (Gate* gate : m_gates) {
         if(dynamic_cast<Exit*>(gate)){
@@ -444,7 +453,7 @@ void GameWindow::updateGame() {
     if(total_score>=60){
         m_player->healthBar()->reset();
         m_player->scoreBar()->reset();
-        QMessageBox::information(this,"congrats","The health is resotred");
+        //QMessageBox::information(this,"congrats","The health is resotred");
     }
     // Check if player is out of bounds
     if (m_player->pos().y() > height() ||
@@ -461,6 +470,9 @@ void GameWindow::updateGame() {
         m_gameOver = true;
         m_gameTimer.stop();
         update();
+    }
+    for (Coin* coin : m_coins) {
+        coin->Update(m_player);
     }
 
     for (Enemy* enemy : m_enemies) {
@@ -531,7 +543,7 @@ QList<tile*> GameWindow::createTiles(int startX, int y, int count,
                                       int tileWidth, int tileHeight, bool createEnemy,
                                       int overlap, const QList<int>& spikeIndices,
                                       const QList<int>& pressureIndices,
-                                      const QList<int>& gateIndices,  const QList<int>& choppersIndices) {
+                                      const QList<int>& gateIndices,  const QList<int>& choppersIndices,  const QList<int>& coinIndices) {
     QList<tile*> tileList;
 
     for (int i = 0; i < count; i++) {
@@ -559,6 +571,11 @@ QList<tile*> GameWindow::createTiles(int startX, int y, int count,
             Gate* gate = new Gate(QPointF(x, y - 80 + Gate::SINK_OFFSET));
             m_gates.append(gate);
         }
+        if (coinIndices.contains(i)) {
+            Coin* coin = new Coin(QPointF(x + tileWidth/2 - Coin::COIN_WIDTH/2,
+                                          y - Coin::COIN_HEIGHT - 10)); // 10 pixels above tile
+            m_coins.append(coin);
+    }
     }
     transition = new Transition(transitionX,transitionY,transitionWidth,transitionHeight);
     transition->setPos(transitionX,transitionY);
