@@ -8,7 +8,7 @@
 #include <QKeyEvent>
 #include <QDebug>
 
-GameWindow::GameWindow(QWidget *parent) : QMainWindow(parent), m_debugMode(false),
+GameWindow::GameWindow(QWidget *parent, int healthVal, int scoreVal) : QMainWindow(parent), m_debugMode(false),
     m_frameCounter(0), m_fps(0)
 {
     setWindowTitle("Enemy Game");
@@ -20,7 +20,8 @@ GameWindow::GameWindow(QWidget *parent) : QMainWindow(parent), m_debugMode(false
     transitionHeight=20;
     PositionPlayerx=0;
     PositionPlayery=0;
-    total_health=15;
+    total_health=healthVal;
+    total_score = scoreVal;
     transition = new Transition(transitionX,transitionY,transitionWidth,transitionHeight);
     Background=nullptr;
     connect(&m_gameTimer, &QTimer::timeout, this, &GameWindow::updateGame);
@@ -59,7 +60,7 @@ void GameWindow::initializeGame() {
     delete transition;
     transition = new Transition(transitionX,transitionY,transitionWidth,transitionHeight);
     createTilesandWallsandCeiling();
-    m_player = new player(true, total_health, this);
+    m_player = new player(true, total_health, total_score, this);
     if(PositionPlayerx==-1){
     if (!m_tiles.isEmpty()) {
         tile* firstTile = m_tiles.first();
@@ -438,6 +439,13 @@ QString GameWindow::stateToString(Enemy::State state) const {
 
 void GameWindow::updateGame() {
     total_health = m_player->healthBar()->getHealth();
+    total_score = m_player->scoreBar()->value();
+    //Bonus part
+    if(total_score>=60){
+        m_player->healthBar()->reset();
+        m_player->scoreBar()->reset();
+        QMessageBox::information(this,"congrats","The health is resotred");
+    }
     // Check if player is out of bounds
     if (m_player->pos().y() > height() ||
         m_player->pos().x() < -50 ||

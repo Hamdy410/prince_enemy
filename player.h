@@ -27,7 +27,7 @@ class player : public QObject {
     Q_OBJECT
 
 public:
-    player(bool right = true, int health=15,QObject* parent = nullptr);
+    player(bool right = true, int health=15, int score =0,QObject* parent = nullptr);
     ~player();
     void handleKeyPress(QKeyEvent* event);
     void handleKeyRelease(QKeyEvent* event);

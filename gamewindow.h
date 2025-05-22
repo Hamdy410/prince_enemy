@@ -27,7 +27,7 @@ class GameWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit GameWindow(QWidget *parent = nullptr);
+    explicit GameWindow(QWidget *parent = nullptr, int healthVal=15, int scoreVal=0);
     void setFundementals(int x, int y,int width, int height,QString BackUrl = "",QString FrontUrl = "", int posX=-1, int posY=-1){
         Background = new QPixmap(BackUrl);
         Foreground = new QPixmap(FrontUrl);
@@ -64,6 +64,7 @@ protected:
     QMap<int, int> m_tileToGateMap;
     player *m_player;
     int total_health;
+    int total_score;
     virtual void getNextRoom();
     virtual void getCurrentRoom(){}
     void connectPressureTileToGate(int pressureTileIndex, int gateIndex);

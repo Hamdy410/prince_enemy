@@ -2,10 +2,11 @@
 #include "level1window.h"
 #include "tile.h"
 #include "level2window.h"
-Level1Window::Level1Window(QWidget* parent) : GameWindow(parent)
+#include<QMessageBox>
+Level1Window::Level1Window(QWidget* parent, int healthVal, int scoreVal) : GameWindow(parent,healthVal,scoreVal)
 {
     setWindowTitle("Level 1");
-    m_currentRoom = ROOM_ONE;
+    m_currentRoom = ROOM_SEVEN;
     initializeGame();
 }
 
@@ -354,8 +355,9 @@ void Level1Window::getNextRoom(){
     }else if(m_currentRoom == ROOM_SEVEN){
         m_currentRoom=ROOM_EIGHT;
     }else if(m_currentRoom==ROOM_EIGHT){
+        QMessageBox::information(this,"well done","you passed lvl1");
         this->hide();
-        Level2Window* newWindow = new Level2Window(this);
+        Level2Window* newWindow = new Level2Window(this,total_health,total_score);
         newWindow->show();
     }
 }

@@ -6,9 +6,9 @@
 class Level5Window : public GameWindow
 {
 public:
-    explicit Level5Window(QWidget* parent = nullptr);
+    explicit Level5Window(QWidget* parent = nullptr, int healthVal=15, int scoreVal=0);
     enum Room {
-        ROOM_ONE, ROOM_TWO, ROOM_THREE, ROOM_FOUR
+        ROOM_ONE, ROOM_TWO, ROOM_THREE
     };
 
 protected:
@@ -17,7 +17,6 @@ protected:
     void createRoom1();
     void createRoom2();
     void createRoom3();
-    void createRoom4();
     void getNextRoom() override;
     void getCurrentRoom() override;
     void changeRoom(Room newRoom);

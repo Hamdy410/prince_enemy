@@ -14,7 +14,7 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
     qApp->processEvents(QEventLoop::AllEvents);
-    Level5Window w;
+    Level1Window w;
     w.show();
     /*
     // Create all pages

@@ -2,7 +2,8 @@
 #include "level3window.h"
 #include "tile.h"
 #include "level4window.h"
-Level3Window::Level3Window(QWidget* parent) : GameWindow(parent)
+#include<QMessageBox>
+Level3Window::Level3Window(QWidget* parent, int healthVal, int scoreVal) : GameWindow(parent,healthVal,scoreVal)
 {
     setWindowTitle("Level 3");
     m_currentRoom = ROOM_ONE;
@@ -202,7 +203,8 @@ void Level3Window::getNextRoom(){
     }else if(m_currentRoom == ROOM_FOUR){
         m_currentRoom=ROOM_FIVE;
     }else if(m_currentRoom == ROOM_FIVE){
-        Level4Window* newWind = new Level4Window(this);
+        QMessageBox::information(this,"well done","you passed lvl3");
+        Level4Window* newWind = new Level4Window(this,total_health,total_score);
         newWind->show();
         this->hide();
     }

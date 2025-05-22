@@ -10,7 +10,7 @@
 #include <QList>
 #include <QDebug>
 
-player::player(bool right, int health, QObject* parent)
+player::player(bool right, int health, int score, QObject* parent)
     : QObject(parent),
     m_health(health),
     statue(right ? StillRight : StillLeft),
@@ -19,6 +19,7 @@ player::player(bool right, int health, QObject* parent)
     isHopping(0), isJumping(0),isFalling(true),RightFacingDirection(right),damage_of_falling(0),falling_distance(0)
     ,m_healthBar(new Health(m_health)), m_scoreBar(new Score)
 {
+    m_scoreBar->increase(score);
     QPixmap SpriteSheet(":/images/Prince_Spritesheet.png");
     double width = SpriteSheet.width() / 14.0;
     double height = SpriteSheet.height() / 38.0;
@@ -485,7 +486,7 @@ void player::checkCollisions(const QList<tile*> &tiles, const QList<Gate*>& gate
             float overlapRight = wallBox.right() - playerBox.left();
             float minOverlap = qMin(overlapRight,overlapLeft);
             if(minOverlap==overlapLeft){
-                 m_x = wallBox.left()+19;
+                 m_x = wallBox.left()-50;
             }else{
                 m_x = wallBox.right()-19;
             }
