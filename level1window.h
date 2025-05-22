@@ -13,6 +13,9 @@ public:
         ROOM_ONE, ROOM_TWO, ROOM_THREE, ROOM_FOUR,ROOM_FIVE,ROOM_SIX,ROOM_SEVEN,ROOM_EIGHT
     };
 
+signals:
+    void Level2Requested();
+
 protected:
     using GameWindow::createTiles;
     void createTilesandWallsandCeiling() override;

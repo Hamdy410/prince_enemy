@@ -146,8 +146,8 @@ void Level5Window::getNextRoom(){
     }else if(m_currentRoom == ROOM_TWO){
         m_currentRoom=ROOM_THREE;
     }else if(m_currentRoom == ROOM_THREE){
-        QMessageBox::information(this,"well done","you passed the game and met the princess");
-        delete this;
+        this->hide();
+        emit gameCompleted();
     }
 }
 void Level5Window::getCurrentRoom(){

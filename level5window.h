@@ -5,11 +5,16 @@
 
 class Level5Window : public GameWindow
 {
+    Q_OBJECT
+
 public:
     explicit Level5Window(QWidget* parent = nullptr, int healthVal=15, int scoreVal=0);
     enum Room {
         ROOM_ONE, ROOM_TWO, ROOM_THREE
     };
+
+signals:
+    void gameCompleted();
 
 protected:
     using GameWindow::createTiles;

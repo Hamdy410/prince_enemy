@@ -22,6 +22,9 @@
 #include "ceiling.h"
 #include "transition.h"
 #include "exit.h"
+
+class GameManager;
+
 class GameWindow : public QMainWindow
 {
     Q_OBJECT
@@ -39,6 +42,8 @@ public:
         PositionPlayery=posY;
     }
     ~GameWindow();
+
+    friend class GameManager;
 protected:
     void initializeGame();
     void stopGame();

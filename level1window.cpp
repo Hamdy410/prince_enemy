@@ -355,10 +355,8 @@ void Level1Window::getNextRoom(){
     }else if(m_currentRoom == ROOM_SEVEN){
         m_currentRoom=ROOM_EIGHT;
     }else if(m_currentRoom==ROOM_EIGHT){
-        QMessageBox::information(this,"well done","you passed lvl1");
         this->hide();
-        Level2Window* newWindow = new Level2Window(this,total_health,total_score);
-        newWindow->show();
+        emit Level2Requested();
     }
 }
 void Level1Window::getCurrentRoom(){
