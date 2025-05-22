@@ -149,7 +149,7 @@ void GameWindow::paintEvent(QPaintEvent *event) {
             p->draw(&painter);
             //painter.drawRect(p->boundingRect());
         }else{
-            if(true){
+            if(false){
         painter.save();
         painter.setPen(QPen(Qt::red, 2));
         painter.drawRect(t->boundingRect());
@@ -157,7 +157,7 @@ void GameWindow::paintEvent(QPaintEvent *event) {
             }
         }
     }
-    if(true){
+    if(false){
     painter.setPen(QPen(Qt::green, 10));
     painter.setBrush(QBrush(Qt::red));
     painter.drawRect(transition->boundingRect());
@@ -197,7 +197,7 @@ void GameWindow::paintEvent(QPaintEvent *event) {
         *Foreground = Foreground->scaled(640,480);
         painter.drawPixmap(0,0,*Foreground);
     }
-    if(true){
+    if(false){
     for (wall* w : m_walls) {
         painter.drawRect(w->boundingRect());
         if (m_debugMode) {
